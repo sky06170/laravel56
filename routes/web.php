@@ -15,7 +15,27 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', 'TestController@test');
+Route::group(['prefix' => '/test'], function(){
+
+	Route::get('/', 'TestController@test');
+
+	Route::get('/sodiumCryptoBox', 'TestController@sodiumCryptoBox');
+
+	Route::get('/sodiumCryptoBoxOpen/{encrypted}', 'TestController@sodiumCryptoBoxOpen');
+
+});
+
+Route::group(['prefix' => '/line'], function(){
+
+	Route::get('/', 'LineController@index');
+
+	Route::post('/sendText', 'LineController@sendText');
+
+	Route::post('/sendImage', 'LineController@sendImage');
+
+	Route::get('/sendButtonTemplate', 'LineController@sendButtonTemplate');
+
+});
 
 Auth::routes();
 
