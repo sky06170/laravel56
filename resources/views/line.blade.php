@@ -78,6 +78,8 @@
                             <input type="button" value="發送訊息" onclick="sendMsg()">
                             <input type="button" value="發送圖片" onclick="sendImage()">
                             <input type="button" value="發送按鈕模板" onclick="sendButtonTemplate()">
+                            <input type="button" value="發送確認模板" onclick="sendConfirmTemplate()">
+                            <input type="button" value="發送Carousel模板" onclick="sendCarouselTemplate()">
                         </div>
                     </form>
                 </div>
@@ -136,6 +138,44 @@
                     {
                         if(response.status){
                             console.log('sendButtonTemplate success!');
+                        }
+                    },
+                    error:function(xhr)
+                    {
+                        console.log(xhr.responseText());
+                    }
+                });
+            }
+            function sendConfirmTemplate()
+            {
+                $.ajax({
+                    url:'/line/sendConfirmTemplate',
+                    type:'post',
+                    data: $('#MsgForm').serialize(),
+                    dataType:'json',
+                    success:function(response)
+                    {
+                        if(response.status){
+                            console.log('sendConfirmTemplate success!');
+                        }
+                    },
+                    error:function(xhr)
+                    {
+                        console.log(xhr.responseText());
+                    }
+                });
+            }
+            function sendCarouselTemplate()
+            {
+                $.ajax({
+                    url:'/line/sendCarouselTemplate',
+                    type:'post',
+                    data: $('#MsgForm').serialize(),
+                    dataType:'json',
+                    success:function(response)
+                    {
+                        if(response.status){
+                            console.log('sendCarouselTemplate success!');
                         }
                     },
                     error:function(xhr)
