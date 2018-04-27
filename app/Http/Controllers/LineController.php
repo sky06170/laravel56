@@ -115,7 +115,7 @@ class LineController extends Controller
     			[
     				'title' => '音樂清單',
     				'text' => '請選出喜歡的音樂方式',
-    				'thumbnailImageUrl' => 'https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg',
+    				'thumbnailImageUrl' => 'https://static1.squarespace.com/static/57dea572579fb3ea46810d43/t/580e06ddd1758e7907272fdc/1477314272980/Background+B+1000x300.png?format=1000w',
     				'actionBuilders' => [
 											[
 												'label' => '古典',

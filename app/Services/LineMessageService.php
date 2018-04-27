@@ -9,6 +9,7 @@ use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 
 class LineMessageService{
@@ -104,6 +105,16 @@ class LineMessageService{
 			$button = new ButtonTemplateBuilder($column['title'],$column['text'], $column['thumbnailImageUrl'], $actions);
 			array_push($columnArray,$button);
 		}
+		$carousel = new CarouselTemplateBuilder($columnArray);
+
+		$message = new TemplateMessageBuilder("這訊息要用手機的賴才看的到哦!", $carousel);
+
+		$response = $this->bot->pushMessage($this->LINE_USER_ID, $message);
+		if ($response->isSucceeded()) {
+		    return true;
+		}
+
+		return false;
 	}
 
 }
