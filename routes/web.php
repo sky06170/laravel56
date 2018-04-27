@@ -33,7 +33,11 @@ Route::group(['prefix' => '/line'], function(){
 
 	Route::post('/sendImage', 'LineController@sendImage');
 
-	Route::get('/sendButtonTemplate', 'LineController@sendButtonTemplate');
+	Route::post('/sendButtonTemplate', 'LineController@sendButtonTemplate');
+
+	Route::post('/sendConfirmTemplate', 'LineController@sendConfirmTemplate');
+
+	Route::post('/sendCarouselTemplate', 'LineController@sendCarouselTemplate');
 
 });
 

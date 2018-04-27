@@ -45,26 +45,97 @@ class LineController extends Controller
 
     public function sendButtonTemplate(Request $request)
     {
-    	//if($request->ajax()){
-			$title = 'Menu';
-			$text = 'Please select';
+    	if($request->ajax()){
+			$title = '運動清單';
+			$text = '請選出喜歡的運動方式';
 			$thumbnailImageUrl = 'https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg';
 			$actionBuilders = [
-				[
-					'type' => 'postback',
-					'label' => 'Buy',
-					'data' => 'action=buy&itemid=123'
-				],
-				[
-					'type' => 'postback',
-					'label' => 'Add to cart',
-					'data' => 'action=add&itemid=123'
-				]
+					[
+						'label' => '游泳',
+						'text'  => '我選游泳'
+					],
+					[
+						'label' => '跑步',
+						'text' => '我選跑步'
+					],
+					[
+						'label' => '瑜珈',
+						'text' => '我選瑜珈'
+					],
 			];
     		$response = $this->lineMessageService->sendButtonTemplateMessage($title, $text, $thumbnailImageUrl, $actionBuilders);
     		return response()->json(['status' => $response]);
-    	//}
-    	//return response()->json(['status' => false]);
+    	}
+    	return response()->json(['status' => false]);
+    }
+
+    public function sendConfirmTemplate(Request $request)
+    {
+    	if($request->ajax()){
+    		$text = '今晚要打free fire嗎?';
+    		$actionBuilders = [
+					[
+						'label' => 'Yes',
+						'text'  => 'yes'
+					],
+					[
+						'label' => 'No',
+						'text' => 'no'
+					],
+			];
+    		$response = $this->lineMessageService->sendConfirmTemplateMessage($text, $actionBuilders);
+    		return response()->json(['status' => $response]);
+    	}
+    	return response()->json(['status' => false]);
+    }
+
+    public function sendCarouselTemplate(Request $request)
+    {
+    	if($request->ajax()){
+    		$columns = [
+    			[
+    				'title' => '運動清單',
+    				'text' => '請選出喜歡的運動方式',
+    				'thumbnailImageUrl' => 'https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg',
+    				'actionBuilders' => [
+											[
+												'label' => '游泳',
+												'text'  => '我選游泳'
+											],
+											[
+												'label' => '跑步',
+												'text' => '我選跑步'
+											],
+											[
+												'label' => '瑜珈',
+												'text' => '我選瑜珈'
+											],
+									],
+    			],
+    			[
+    				'title' => '音樂清單',
+    				'text' => '請選出喜歡的音樂方式',
+    				'thumbnailImageUrl' => 'https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg',
+    				'actionBuilders' => [
+											[
+												'label' => '古典',
+												'text'  => '我選古典'
+											],
+											[
+												'label' => '搖滾',
+												'text' => '我選搖滾'
+											],
+											[
+												'label' => '民謠',
+												'text' => '我選民謠'
+											],
+									],
+    			],
+    		];
+    		$response = $this->lineMessageService->sendCarouselTemplateMessage($columns);
+    		return response()->json(['status' => $response]);
+    	}
+    	return response()->json(['status' => false]);
     }
 
 }

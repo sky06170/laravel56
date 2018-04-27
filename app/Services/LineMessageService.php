@@ -8,6 +8,7 @@ use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 
 class LineMessageService{
@@ -60,25 +61,49 @@ class LineMessageService{
 
 	public function sendButtonTemplateMessage($title = '', $text = '', $thumbnailImageUrl = '', $actionBuilders = [])
 	{
-		$title = '喜歡的男人';
-		$text = '請選出最喜歡的男人';
-		$actions = [
-			new MessageTemplateActionBuilder("Rick","我選Rick"),
-			new MessageTemplateActionBuilder("rick","我選rick"),
-			new MessageTemplateActionBuilder("蘇恆","我選蘇恆"),
-			new MessageTemplateActionBuilder("恆恆","我選恆恆"),
-		];
-		$thumbnailImageUrl = "https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg";
+		$actions = [];
+		foreach($actionBuilders as $val){
+			array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+		}
 		$button = new ButtonTemplateBuilder($title,$text, $thumbnailImageUrl, $actions);
 		$message = new TemplateMessageBuilder("這訊息要用手機的賴才看的到哦!", $button);
 
-		//123 - GID = C823b498d76e211d0fb3f944efb8d85ae
-		//hy - GID = Cf08b180b5d0bfa65f34e865263653ed7
-		$response = $this->bot->pushMessage('Cf08b180b5d0bfa65f34e865263653ed7', $message);
+		$response = $this->bot->pushMessage($this->LINE_USER_ID, $message);
 		if ($response->isSucceeded()) {
 		    return true;
 		}
+		//echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
 		return false;
+	}
+
+	public function sendConfirmTemplateMessage($text = '', $actionBuilders = [])
+	{
+		$actions = [];
+		foreach($actionBuilders as $val){
+			array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+		}
+		$confirm = new ConfirmTemplateBuilder($text, $actions);
+		$message = new TemplateMessageBuilder("這訊息要用手機的賴才看的到哦!", $confirm);
+
+		$response = $this->bot->pushMessage($this->LINE_USER_ID, $message);
+		if ($response->isSucceeded()) {
+		    return true;
+		}
+		//echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
+		return false;
+	}
+
+	public function sendCarouselTemplateMessage($columns = [])
+	{
+		$columnArray = [];
+		foreach($columns as $column){
+			$actions = [];
+			foreach($column['actionBuilders'] as $val){
+				array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+			}
+			$button = new ButtonTemplateBuilder($column['title'],$column['text'], $column['thumbnailImageUrl'], $actions);
+			array_push($columnArray,$button);
+		}
 	}
 
 }
