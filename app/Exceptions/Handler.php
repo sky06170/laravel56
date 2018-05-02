@@ -56,6 +56,6 @@ class Handler extends ExceptionHandler
 
     public function renderHttpException($exception)
     {
-        return response()->view('errors.errors',compact('exception'));
+        //return response()->view('errors.errors',compact('exception'));
     }
 }
