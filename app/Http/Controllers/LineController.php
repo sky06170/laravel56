@@ -26,7 +26,7 @@ class LineController extends Controller
     {
     	if($request->ajax()){
     		$message = $request->input('message','');
-    		$response = $this->lineMessageService->sendTextMessage($message);
+    		$response = $this->lineMessageService->push($message);
     		return response()->json(['status' => $response]);
     	}
     	return response()->json(['status' => false]);
@@ -35,9 +35,7 @@ class LineController extends Controller
     public function sendImage(Request $request)
     {
     	if($request->ajax()){
-			$originalContentUrl = "https://cdn2.ettoday.net/images/2709/2709691.jpg";
-			$previewImageUrl = "https://cdn2.ettoday.net/images/2709/2709691.jpg";
-    		$response = $this->lineMessageService->sendImageMessage($originalContentUrl, $previewImageUrl);
+            $response = $this->lineMessageService->push('https://cdn2.ettoday.net/images/2709/2709691.jpg','img');
     		return response()->json(['status' => $response]);
     	}
     	return response()->json(['status' => false]);
@@ -46,24 +44,26 @@ class LineController extends Controller
     public function sendButtonTemplate(Request $request)
     {
     	if($request->ajax()){
-			$title = '運動清單';
-			$text = '請選出喜歡的運動方式';
-			$thumbnailImageUrl = 'https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg';
-			$actionBuilders = [
-					[
-						'label' => '游泳',
-						'text'  => '我選游泳'
-					],
-					[
-						'label' => '跑步',
-						'text' => '我選跑步'
-					],
-					[
-						'label' => '瑜珈',
-						'text' => '我選瑜珈'
-					],
-			];
-    		$response = $this->lineMessageService->sendButtonTemplateMessage($title, $text, $thumbnailImageUrl, $actionBuilders);
+            $data = [
+                'title' => '運動清單',
+                'text'  => '請選出喜歡的運動方式',
+                'thumbnailImageUrl' => 'https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg',
+                'actionBuilders' => [
+                        [
+                            'label' => '游泳',
+                            'text'  => '我選游泳'
+                        ],
+                        [
+                            'label' => '跑步',
+                            'text' => '我選跑步'
+                        ],
+                        [
+                            'label' => '瑜珈',
+                            'text' => '我選瑜珈'
+                        ],
+                ]
+            ];
+    		$response = $this->lineMessageService->push($data, 'button');
     		return response()->json(['status' => $response]);
     	}
     	return response()->json(['status' => false]);
@@ -72,18 +72,20 @@ class LineController extends Controller
     public function sendConfirmTemplate(Request $request)
     {
     	if($request->ajax()){
-    		$text = '今晚要打free fire嗎?';
-    		$actionBuilders = [
-					[
-						'label' => 'Yes',
-						'text'  => 'yes'
-					],
-					[
-						'label' => 'No',
-						'text' => 'no'
-					],
-			];
-    		$response = $this->lineMessageService->sendConfirmTemplateMessage($text, $actionBuilders);
+            $data = [
+                'text' => '今晚要打free fire嗎?',
+                'actionBuilders' => [
+                        [
+                            'label' => 'Yes',
+                            'text'  => 'yes'
+                        ],
+                        [
+                            'label' => 'No',
+                            'text' => 'no'
+                        ],
+                ]
+            ];
+    		$response = $this->lineMessageService->push($data, 'confirm');
     		return response()->json(['status' => $response]);
     	}
     	return response()->json(['status' => false]);
@@ -132,7 +134,7 @@ class LineController extends Controller
 									],
     			],
     		];
-    		$response = $this->lineMessageService->sendCarouselTemplateMessage($columns);
+    		$response = $this->lineMessageService->push($columns, 'carousel_button');
     		return response()->json(['status' => $response]);
     	}
     	return response()->json(['status' => false]);

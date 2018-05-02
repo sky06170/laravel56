@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient as Client;
 use LINE\LINEBot;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
@@ -40,81 +41,122 @@ class LineMessageService{
 		$this->bot = new LINEBot($httpClient, ['channelSecret' => $this->LINE_CHANNEL_SECRET]);
 	}
 
-	public function sendTextMessage($message = '')
+	/**
+	 * 回覆訊息
+	 * @param  string $replyToken
+	 * @param  string|object $reply
+	 * @param  string $type
+	 * @return bool
+	 */
+	public function reply($replyToken, $reply = '', $type = 'msg')
 	{
-		$textMessageBuilder = new TextMessageBuilder($message);
-		$response = $this->bot->pushMessage($this->LINE_USER_ID, $textMessageBuilder);
-		if ($response->isSucceeded()) {
-		    return true;
-		}
-		return false;
-	}
+		$messageBuilder = $this->messageBuilder($reply, $type);
 
-	public function sendImageMessage($originalContentUrl = '', $previewImageUrl = '')
-	{
-		$imageMessageBuilder = new ImageMessageBuilder($originalContentUrl, $previewImageUrl);
-		$response = $this->bot->pushMessage($this->LINE_USER_ID, $imageMessageBuilder);
-		if ($response->isSucceeded()) {
-		    return true;
-		}
-		return false;
-	}
-
-	public function sendButtonTemplateMessage($title = '', $text = '', $thumbnailImageUrl = '', $actionBuilders = [])
-	{
-		$actions = [];
-		foreach($actionBuilders as $val){
-			array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
-		}
-		$button = new ButtonTemplateBuilder($title,$text, $thumbnailImageUrl, $actions);
-		$message = new TemplateMessageBuilder("這訊息要用手機的賴才看的到哦!", $button);
-
-		$response = $this->bot->pushMessage($this->LINE_USER_ID, $message);
-		if ($response->isSucceeded()) {
-		    return true;
-		}
-		//echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
-		return false;
-	}
-
-	public function sendConfirmTemplateMessage($text = '', $actionBuilders = [])
-	{
-		$actions = [];
-		foreach($actionBuilders as $val){
-			array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
-		}
-		$confirm = new ConfirmTemplateBuilder($text, $actions);
-		$message = new TemplateMessageBuilder("這訊息要用手機的賴才看的到哦!", $confirm);
-
-		$response = $this->bot->pushMessage($this->LINE_USER_ID, $message);
-		if ($response->isSucceeded()) {
-		    return true;
-		}
-		//echo $response->getHTTPStatus() . ' ' . $response->getRawBody();
-		return false;
-	}
-
-	public function sendCarouselTemplateMessage($columns = [])
-	{
-		$columnArray = [];
-		foreach($columns as $column){
-			$actions = [];
-			foreach($column['actionBuilders'] as $val){
-				array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+		if($messageBuilder !== null){
+			$response = $this->bot->replyMessage($replyToken, $messageBuilder);
+			if ($response->isSucceeded()) {
+			    return true;
+			}else{
+				Log::info($response->getHTTPStatus() . ' ' . $response->getRawBody());
 			}
-			$button = new ButtonTemplateBuilder($column['title'],$column['text'], $column['thumbnailImageUrl'], $actions);
-			array_push($columnArray,$button);
 		}
-		$carousel = new CarouselTemplateBuilder($columnArray);
-
-		$message = new TemplateMessageBuilder("這訊息要用手機的賴才看的到哦!", $carousel);
-
-		$response = $this->bot->pushMessage($this->LINE_USER_ID, $message);
-		if ($response->isSucceeded()) {
-		    return true;
-		}
-
 		return false;
+	}
+
+	/**
+	 * 推播訊息
+	 * @param  string|object $message
+	 * @param  string $type 
+	 * @return bool
+	 */
+	public function push($message, $type = 'msg')
+	{
+		$messageBuilder = $this->messageBuilder($message, $type);
+		if($messageBuilder !== null){
+			$response = $this->bot->pushMessage($this->LINE_USER_ID, $messageBuilder);
+			if ($response->isSucceeded()) {
+			    return true;
+			}else{
+				Log::info($response->getHTTPStatus() . ' ' . $response->getRawBody());
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 建立訊息格式
+	 * @param  string|object $message
+	 * @param  string $type
+	 * @return object $messageBuilder
+	 */
+	private function messageBuilder($message, $type)
+	{
+		if($message == null){
+			return null;
+		}
+
+		switch($type){
+			case 'msg':
+				$messageBuilder = new TextMessageBuilder($message);
+				break;
+			case 'img':
+				$originalContentUrl = $message;
+				$previewImageUrl    = $message;
+				$messageBuilder     = new ImageMessageBuilder($originalContentUrl, $previewImageUrl);
+				break;
+			case 'button': 
+				$actions = [];
+				foreach($message['actionBuilders'] as $val){
+					array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+				}
+				$button         = new ButtonTemplateBuilder($message['title'], $message['text'], $message['thumbnailImageUrl'], $actions);
+				$messageBuilder = new TemplateMessageBuilder("這訊息要用手機的Line才看的到哦!", $button);
+				break;
+			case 'confirm':
+				$actions = [];
+				foreach($message['actionBuilders'] as $val){
+					array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+				}
+				$confirm        = new ConfirmTemplateBuilder($message['text'], $actions);
+				$messageBuilder = new TemplateMessageBuilder("這訊息要用手機的Line才看的到哦!", $confirm);
+				break;
+			case 'carousel_button':
+				$columnArray = [];
+				foreach($message as $column){
+					$actions = [];
+					foreach($column['actionBuilders'] as $val){
+						array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+					}
+					$button = new ButtonTemplateBuilder($column['title'],$column['text'], $column['thumbnailImageUrl'], $actions);
+					array_push($columnArray,$button);
+				}
+				$carousel       = new CarouselTemplateBuilder($columnArray);
+				$messageBuilder = new TemplateMessageBuilder("這訊息要用手機的Line才看的到哦!", $carousel);
+				break;
+			default:
+				$messageBuilder = null;
+				break;
+		}
+
+		return $messageBuilder;
+	}
+
+	public function getWebhookData($jsonString)
+	{
+		$jsonObject = json_decode($jsonString);
+
+		$data = $jsonObject->events[0];
+
+		return [
+			'type' => $data->type,
+			'replyToken' => $data->replyToken,
+			'source_userID' => $data->source->userId,
+			'source_type' => $data->source->type,
+			'timestamp' => $data->timestamp,
+			'message_type' => $data->message->type,
+			'message_id' => $data->message->id,
+			'message_text' => $data->message->text
+		];
 	}
 
 }
