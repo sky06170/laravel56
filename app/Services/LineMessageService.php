@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
-use LINE\LINEBot\HTTPClient\CurlHTTPClient as Client;
+use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
@@ -15,6 +17,7 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
+use App\Repositories\LineConfigRepository;
 
 class LineMessageService{
 
@@ -28,20 +31,71 @@ class LineMessageService{
 
 	protected $bot;
 
-	public function __construct()
+	protected $lineConfigRepository;
+
+	public function __construct(LineConfigRepository $lineConfigRepository)
 	{
 		$this->LINE_CHANNEL_ID     = env('LINE_CHANNEL_ID');
 		$this->LINE_CHANNEL_SECRET = env('LINE_CHANNEL_SECRET');
 		$this->LINE_ACCESS_TOKEN   = env('LINE_ACCESS_TOKEN');
 		$this->LINE_USER_ID        = env('LINE_USER_ID');
+		
+		$this->lineConfigRepo      = $lineConfigRepository;
 
 		$this->boot();
 	}
 
 	private function boot()
 	{
-		$httpClient = new Client($this->LINE_ACCESS_TOKEN);
+		$this->checkAccessTokenInfo();
+		$httpClient = new CurlHTTPClient($this->LINE_ACCESS_TOKEN);
 		$this->bot = new LINEBot($httpClient, ['channelSecret' => $this->LINE_CHANNEL_SECRET]);
+	}
+
+	private function checkAccessTokenInfo()
+	{
+		$config = $this->lineConfigRepo->find();
+		if($config == null){
+			$dataArray               = $this->getAccessTokenInfo();
+			$response                = $this->lineConfigRepo->createAccessToken($dataArray);
+			$this->LINE_ACCESS_TOKEN = $response->access_token;
+		}else{
+			$today              = Carbon::now('Asia/Taipei')->getTimestamp();
+			$accessTokenExpires = Carbon::createFromFormat('Y-m-d H:i:s', $config->updated_at, 'Asia/Taipei')->addSeconds($config->access_token_expires_in)->getTimestamp();
+			if($today >= $accessTokenExpires){
+				$dataArray               = $this->getAccessTokenInfo();
+				$response                = $this->lineConfigRepo->updateAccessToken($dataArray);
+				$this->LINE_ACCESS_TOKEN = $response->access_token;
+			}
+		}
+	}
+
+	private function getAccessTokenInfo()
+	{
+		$method = 'post';
+
+		$url = 'https://api.line.me/v2/oauth/accessToken';
+
+		$formParams = [
+			'grant_type' => 'client_credentials',
+			'client_id' => $this->LINE_CHANNEL_ID,
+			'client_secret' => $this->LINE_CHANNEL_SECRET
+		];
+
+		$headers = [
+			'Content-Type' => 'application/x-www-form-urlencoded'
+		];
+
+		$response = $this->sendRequest($method, $url, $formParams, $headers);
+
+		$accessTokenInfo = json_decode($response->getBody()->getContents(),true);
+
+		$dataArray = [
+			'access_token' => $accessTokenInfo['access_token'],
+			'access_token_expires_in' => $accessTokenInfo['expires_in']
+		]; 
+
+		return $dataArray;
 	}
 
 	/**
@@ -176,6 +230,16 @@ class LineMessageService{
 			'message_id' => $data->message->id,
 			'message_text' => $data->message->text
 		];
+	}
+
+	private function sendRequest($method, $uri, $formParams, $headers)
+	{
+	    $client = new Client;
+
+	    return $client->request($method,$uri,[
+	        'form_params' => $formParams,
+	        'headers' => $headers
+	    ]);
 	}
 
 	private function templateMsg()
