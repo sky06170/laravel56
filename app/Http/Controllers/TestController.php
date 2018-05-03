@@ -5,53 +5,87 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Symfony\Component\DomCrawler\Crawler;
+use App\Services\LineMessageService;
 
 class TestController extends Controller
 {
 
-    public function test()
-    {
-        $s_time = microtime(true);
-        $method = 'get';
-        $uri = 'https://tw.money.yahoo.com/currency-converter';
-        $formParams = [];
-        $response = $this->sendRequest($method,$uri,$formParams);
-        $body = $response->getBody();
-        $contents = $body->getContents();
-        $datas = $this->analyticHtml($contents);
-        $e_time = microtime(true);
-        $r_time = $e_time - $s_time;
+    protected $lineMessageService;
 
-        dd($datas);
+    public function __construct(LineMessageService $lineMessageService)
+    {
+        $this->lineMessageService = $lineMessageService;
     }
 
-    private function analyticHtml($contents)
+    public function sendCarouselBtnTemplate()
     {
-        $crawler = new Crawler($contents);
-
-        $datas = [];
-
-        $crawler->filterXPath('//table[@class="W-100 simple"]/tbody/tr')->each(function(Crawler $node, $i) use(&$datas) {
-            $datas[$i]['name'] = $node->filterXPath('//td[1]/div')->text();
-            $datas[$i]['bank'] = $node->filterXPath('//td[2]/div/a')->text();
-            $datas[$i]['immediate_buy'] = $node->filterXPath('//td[3]')->text();
-            $datas[$i]['immediate_sell'] = $node->filterXPath('//td[4]')->text();
-            $datas[$i]['cash_buy'] = $node->filterXPath('//td[5]')->text();
-            $datas[$i]['cash_sell'] = $node->filterXPath('//td[6]')->text();
-        });
-
-        return $datas;
+        $columns = [
+                [
+                    'title' => '運動清單',
+                    'text' => '請選出喜歡的運動方式',
+                    'thumbnailImageUrl' => 'https://cdn.promodj.com/users-heads/00/00/01/96/70/milky-way-galaxy-wallpaper-1920x1080-1000x300%20%281%29_h592d.jpg',
+                    'actionBuilders' => [
+                                            [
+                                                'label' => '游泳',
+                                                'text'  => '我選游泳'
+                                            ],
+                                            [
+                                                'label' => '跑步',
+                                                'text' => '我選跑步'
+                                            ],
+                                            [
+                                                'label' => '瑜珈',
+                                                'text' => '我選瑜珈'
+                                            ],
+                                    ],
+                ],
+                [
+                    'title' => '音樂清單',
+                    'text' => '請選出喜歡的音樂方式',
+                    'thumbnailImageUrl' => 'https://static1.squarespace.com/static/57dea572579fb3ea46810d43/t/580e06ddd1758e7907272fdc/1477314272980/Background+B+1000x300.png?format=1000w',
+                    'actionBuilders' => [
+                                            [
+                                                'label' => '古典',
+                                                'text'  => '我選古典'
+                                            ],
+                                            [
+                                                'label' => '搖滾',
+                                                'text' => '我選搖滾'
+                                            ],
+                                            [
+                                                'label' => '民謠',
+                                                'text' => '我選民謠'
+                                            ],
+                                    ],
+                ],
+            ];
+            $response = $this->lineMessageService->push($columns, 'carousel_button');
     }
 
-    private function sendRequest($method,$uri,$formParams)
+    public function sendCarouselImgTemplate()
     {
-        $client = new Client();
-        return $client->request($method,$uri,[
-            'form_params' => $formParams,
-            // 'headers' => [
-            //     'Content-Type' => 'application/json'
-            // ]
-        ]);
+        $columns = [
+                [
+                    'imageUrl' => 'https://static.juksy.com/files/articles/78005/5adfea9b3364f.gif?m=widen&i=1000',
+                    'actionBuilders' => [
+                                            [
+                                                'label' => 'View detail',
+                                                'uri'  => 'https://www.juksy.com/archives/78005'
+                                            ]
+                                    ],
+                ],
+                [
+                    'imageUrl' => 'https://static.juksy.com/files/articles/78063/5ae695213024b.PNG?m=widen&i=1000',
+                    'actionBuilders' => [
+                                            [
+                                                'label' => 'View detail',
+                                                'uri'  => 'https://www.juksy.com/archives/78063'
+                                            ]
+                                    ],
+                ],
+            ];
+
+        $response = $this->lineMessageService->push($columns, 'carousel_image');
     }
 
 }

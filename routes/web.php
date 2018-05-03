@@ -17,7 +17,9 @@ Route::get('/', function () {
 
 Route::group(['prefix' => '/test'], function(){
 
-	Route::get('/', 'TestController@test');
+	Route::get('/sendCarouselBtnTemplate', 'TestController@sendCarouselBtnTemplate');
+
+	Route::get('/sendCarouselImgTemplate', 'TestController@sendCarouselImgTemplate');
 
 	Route::get('/sodiumCryptoBox', 'TestController@sodiumCryptoBox');
 
@@ -37,7 +39,9 @@ Route::group(['prefix' => '/line'], function(){
 
 	Route::post('/sendConfirmTemplate', 'LineController@sendConfirmTemplate');
 
-	Route::post('/sendCarouselTemplate', 'LineController@sendCarouselTemplate');
+	Route::post('/sendCarouselBtnTemplate', 'LineController@sendCarouselBtnTemplate');
+
+	Route::post('/sendCarouselImgTemplate', 'LineController@sendCarouselImgTemplate');
 
 });
 
