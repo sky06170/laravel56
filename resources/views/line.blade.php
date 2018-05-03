@@ -77,10 +77,10 @@
                         <div>
                             <input type="button" value="發送訊息" onclick="send('/line/sendText', 'msg');">
                             <input type="button" value="發送圖片" onclick="send('/line/sendImage', 'img')">
-                            <input type="button" value="發送按鈕模板" onclick="send('/line/sendButtonTemplate', 'button')">
-                            <input type="button" value="發送確認模板" onclick="send('/line/sendConfirmTemplate', 'confirm')">
-                            <input type="button" value="發送Carousel Btn模板" onclick="send('/line/sendCarouselBtnTemplate', 'carousel_button')">
-                            <input type="button" value="發送Carousel Img模板" onclick="send('/line/sendCarouselImgTemplate', 'carousel_image')">
+                            <input type="button" value="按鈕模板" onclick="send('/line/sendButtonTemplate', 'button')">
+                            <input type="button" value="確認模板" onclick="send('/line/sendConfirmTemplate', 'confirm')">
+                            <input type="button" value="Carousel Btn模板" onclick="send('/line/sendCarouselBtnTemplate', 'carousel_button')">
+                            <input type="button" value="Carousel Img模板" onclick="send('/line/sendCarouselImgTemplate', 'carousel_image')">
                         </div>
                         <div><a href="https://line.me/R/ti/p/%40lsv2876d"><img height="36" border="0" alt="加入好友" src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png"></a></div>
                     </form>

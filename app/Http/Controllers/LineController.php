@@ -4,18 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Services\LineMessageService;
+use App\Services\LineMessageLogService;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class LineController extends Controller
 {
 
-	protected $lineMessageService;
+	protected $lineMessageService,$lineMessageLogService;
 
     public function __construct(LineMessageService $lineMessageService)
     {
-    	$this->lineMessageService = $lineMessageService;
+        $this->lineMessageService    = $lineMessageService;
     }
 
     public function index()
@@ -26,7 +25,7 @@ class LineController extends Controller
     public function sendText(Request $request)
     {
     	if($request->ajax()){
-    		$message = $request->input('message','');
+    		$message = $request->input('message');
     		$response = $this->lineMessageService->push($message);
     		return response()->json(['status' => $response]);
     	}
@@ -36,7 +35,8 @@ class LineController extends Controller
     public function sendImage(Request $request)
     {
     	if($request->ajax()){
-            $response = $this->lineMessageService->push('https://cdn2.ettoday.net/images/2709/2709691.jpg','img');
+            $data = 'https://cdn2.ettoday.net/images/2709/2709691.jpg';
+            $response = $this->lineMessageService->push($data,'img');
     		return response()->json(['status' => $response]);
     	}
     	return response()->json(['status' => false]);

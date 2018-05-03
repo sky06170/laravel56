@@ -45,6 +45,10 @@ class LineMessageService{
 		$this->boot();
 	}
 
+	/**
+	 * 驅動Line Bot
+	 * @return [type] [description]
+	 */
 	private function boot()
 	{
 		$this->checkAccessTokenInfo();
@@ -135,7 +139,7 @@ class LineMessageService{
 				if ($response->isSucceeded()) {
 				    return true;
 				}else{
-					dd($response->getHTTPStatus() . ' ' . $response->getRawBody());
+					Log::info($response->getHTTPStatus() . ' ' . $response->getRawBody());
 				}
 			}
 			return false;
@@ -198,7 +202,6 @@ class LineMessageService{
 			case 'carousel_image':
 				$columnArray = [];
 				foreach($message as $column){
-					Log::info('label = '.$column['actionBuilder']['label']);
 					$action = new UriTemplateActionBuilder($column['actionBuilder']['label'], $column['actionBuilder']['uri']);
 					$item = new ImageCarouselColumnTemplateBuilder($column['imageUrl'], $action);
 					array_push($columnArray,$item);
@@ -214,6 +217,11 @@ class LineMessageService{
 		return $messageBuilder;
 	}
 
+	/**
+	 * 建構 webhook data
+	 * @param  string $jsonString
+	 * @return array
+	 */
 	public function getWebhookData($jsonString)
 	{
 		$jsonObject = json_decode($jsonString);
@@ -242,6 +250,10 @@ class LineMessageService{
 	    ]);
 	}
 
+	/**
+	 * 模板提示訊息
+	 * @return string
+	 */
 	private function templateMsg()
 	{
 		return '這訊息要用手機的Line才看的到哦!';
