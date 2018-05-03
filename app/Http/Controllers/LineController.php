@@ -91,7 +91,7 @@ class LineController extends Controller
     	return response()->json(['status' => false]);
     }
 
-    public function sendCarouselTemplate(Request $request)
+    public function sendCarouselBtnTemplate(Request $request)
     {
     	if($request->ajax()){
     		$columns = [
@@ -138,6 +138,31 @@ class LineController extends Controller
     		return response()->json(['status' => $response]);
     	}
     	return response()->json(['status' => false]);
+    }
+
+    public function sendCarouselImgTemplate(Request $request)
+    {
+        if($request->ajax()){
+            $columns = [
+                [
+                    'imageUrl' => 'https://static.juksy.com/files/articles/78005/5adfea9b3364f.gif?m=widen&i=1000',
+                    'actionBuilder' => [
+                                            'label' => 'View detail',
+                                            'uri'  => 'https://www.juksy.com/archives/78005'
+                                    ],
+                ],
+                [
+                    'imageUrl' => 'https://static.juksy.com/files/articles/78063/5ae695213024b.PNG?m=widen&i=1000',
+                    'actionBuilder' => [
+                                            'label' => 'View detail',
+                                            'uri'  => 'https://www.juksy.com/archives/78063'
+                                    ],
+                ],
+            ];
+            $response = $this->lineMessageService->push($columns, 'carousel_image');
+            return response()->json(['status' => $response]);
+        }
+        return response()->json(['status' => false]);
     }
 
 }

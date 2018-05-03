@@ -8,9 +8,12 @@ use LINE\LINEBot;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ConfirmTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 
 class LineMessageService{
@@ -71,16 +74,21 @@ class LineMessageService{
 	 */
 	public function push($message, $type = 'msg')
 	{
-		$messageBuilder = $this->messageBuilder($message, $type);
-		if($messageBuilder !== null){
-			$response = $this->bot->pushMessage($this->LINE_USER_ID, $messageBuilder);
-			if ($response->isSucceeded()) {
-			    return true;
-			}else{
-				Log::info($response->getHTTPStatus() . ' ' . $response->getRawBody());
+		try{
+			$messageBuilder = $this->messageBuilder($message, $type);
+			if($messageBuilder !== null){
+				$response = $this->bot->pushMessage($this->LINE_USER_ID, $messageBuilder);
+				if ($response->isSucceeded()) {
+				    return true;
+				}else{
+					dd($response->getHTTPStatus() . ' ' . $response->getRawBody());
+				}
 			}
+			return false;
+		}catch(Exception $e){
+			dd($e->getMessage());
+			return false;
 		}
-		return false;
 	}
 
 	/**
@@ -110,28 +118,39 @@ class LineMessageService{
 					array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
 				}
 				$button         = new ButtonTemplateBuilder($message['title'], $message['text'], $message['thumbnailImageUrl'], $actions);
-				$messageBuilder = new TemplateMessageBuilder("這訊息要用手機的Line才看的到哦!", $button);
+				$messageBuilder = new TemplateMessageBuilder($this->templateMsg(), $button);
 				break;
 			case 'confirm':
 				$actions = [];
 				foreach($message['actionBuilders'] as $val){
-					array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+					array_push($actions,new MessageTemplateActionBuilder($val['label'], $val['text']));
 				}
 				$confirm        = new ConfirmTemplateBuilder($message['text'], $actions);
-				$messageBuilder = new TemplateMessageBuilder("這訊息要用手機的Line才看的到哦!", $confirm);
+				$messageBuilder = new TemplateMessageBuilder($this->templateMsg(), $confirm);
 				break;
 			case 'carousel_button':
 				$columnArray = [];
 				foreach($message as $column){
 					$actions = [];
 					foreach($column['actionBuilders'] as $val){
-						array_push($actions,new MessageTemplateActionBuilder($val['label'],$val['text']));
+						array_push($actions, new MessageTemplateActionBuilder($val['label'], $val['text']));
 					}
-					$button = new ButtonTemplateBuilder($column['title'],$column['text'], $column['thumbnailImageUrl'], $actions);
-					array_push($columnArray,$button);
+					$item = new ButtonTemplateBuilder($column['title'],$column['text'], $column['thumbnailImageUrl'], $actions);
+					array_push($columnArray,$item);
 				}
 				$carousel       = new CarouselTemplateBuilder($columnArray);
-				$messageBuilder = new TemplateMessageBuilder("這訊息要用手機的Line才看的到哦!", $carousel);
+				$messageBuilder = new TemplateMessageBuilder($this->templateMsg(), $carousel);
+				break;
+			case 'carousel_image':
+				$columnArray = [];
+				foreach($message as $column){
+					Log::info('label = '.$column['actionBuilder']['label']);
+					$action = new UriTemplateActionBuilder($column['actionBuilder']['label'], $column['actionBuilder']['uri']);
+					$item = new ImageCarouselColumnTemplateBuilder($column['imageUrl'], $action);
+					array_push($columnArray,$item);
+				}
+				$carousel       = new ImageCarouselTemplateBuilder($columnArray);
+				$messageBuilder = new TemplateMessageBuilder($this->templateMsg(), $carousel);
 				break;
 			default:
 				$messageBuilder = null;
@@ -157,6 +176,11 @@ class LineMessageService{
 			'message_id' => $data->message->id,
 			'message_text' => $data->message->text
 		];
+	}
+
+	private function templateMsg()
+	{
+		return '這訊息要用手機的Line才看的到哦!';
 	}
 
 }

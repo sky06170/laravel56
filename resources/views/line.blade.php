@@ -75,11 +75,12 @@
                         @csrf
                         <div><textarea name="message" cols="100" rows="10"></textarea></div>
                         <div>
-                            <input type="button" value="發送訊息" onclick="sendMsg()">
-                            <input type="button" value="發送圖片" onclick="sendImage()">
-                            <input type="button" value="發送按鈕模板" onclick="sendButtonTemplate()">
-                            <input type="button" value="發送確認模板" onclick="sendConfirmTemplate()">
-                            <input type="button" value="發送Carousel模板" onclick="sendCarouselTemplate()">
+                            <input type="button" value="發送訊息" onclick="send('/line/sendText', 'msg');">
+                            <input type="button" value="發送圖片" onclick="send('/line/sendImage', 'img')">
+                            <input type="button" value="發送按鈕模板" onclick="send('/line/sendButtonTemplate', 'button')">
+                            <input type="button" value="發送確認模板" onclick="send('/line/sendConfirmTemplate', 'confirm')">
+                            <input type="button" value="發送Carousel Btn模板" onclick="send('/line/sendCarouselBtnTemplate', 'carousel_button')">
+                            <input type="button" value="發送Carousel Img模板" onclick="send('/line/sendCarouselImgTemplate', 'carousel_image')">
                         </div>
                     </form>
                 </div>
@@ -88,94 +89,20 @@
         <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
         <script>
             //jQuery 寫法
-            function sendMsg()
+            function send(uri,act)
             {
                 $.ajax({
-                    url:'/line/sendText',
+                    url:uri,
                     type:'post',
                     data: $('#MsgForm').serialize(),
                     dataType:'json',
                     success:function(response)
                     {
                         if(response.status){
-                            $('textarea[name=message]').val('');
-                            console.log('sendMsg success!');
-                        }
-                    },
-                    error:function(xhr)
-                    {
-                        console.log(xhr.responseText());
-                    }
-                });
-            }
-            function sendImage()
-            {
-                $.ajax({
-                    url:'/line/sendImage',
-                    type:'post',
-                    data: $('#MsgForm').serialize(),
-                    dataType:'json',
-                    success:function(response)
-                    {
-                        if(response.status){
-                            console.log('sendImage success!');
-                        }
-                    },
-                    error:function(xhr)
-                    {
-                        console.log(xhr.responseText());
-                    }
-                });
-            }
-            function sendButtonTemplate()
-            {
-                $.ajax({
-                    url:'/line/sendButtonTemplate',
-                    type:'post',
-                    data: $('#MsgForm').serialize(),
-                    dataType:'json',
-                    success:function(response)
-                    {
-                        if(response.status){
-                            console.log('sendButtonTemplate success!');
-                        }
-                    },
-                    error:function(xhr)
-                    {
-                        console.log(xhr.responseText());
-                    }
-                });
-            }
-            function sendConfirmTemplate()
-            {
-                $.ajax({
-                    url:'/line/sendConfirmTemplate',
-                    type:'post',
-                    data: $('#MsgForm').serialize(),
-                    dataType:'json',
-                    success:function(response)
-                    {
-                        if(response.status){
-                            console.log('sendConfirmTemplate success!');
-                        }
-                    },
-                    error:function(xhr)
-                    {
-                        console.log(xhr.responseText());
-                    }
-                });
-            }
-            function sendCarouselTemplate()
-            {
-                $.ajax({
-                    url:'/line/sendCarouselTemplate',
-                    type:'post',
-                    data: $('#MsgForm').serialize(),
-                    dataType:'json',
-                    success:function(response)
-                    {
-                        if(response.status){
-                            console.log('sendCarouselTemplate success!');
+                            if(act == 'msg'){
+                                $('textarea[name=message]').val('');
+                            }
+                            console.log('send success!');
                         }
                     },
                     error:function(xhr)
