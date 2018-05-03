@@ -56,7 +56,7 @@ class NormalLogic{
 			$reply = '目前功能如下：'."\n";
 			$reply .= '[打招呼]'."\n";
 			$reply .= '[提供外幣情報]'."\n";
-			$reply .= '[講講屁話!]'."\n";
+			$reply .= '[模板測試]'."\n";
 
 			$type  = 'msg';
 
