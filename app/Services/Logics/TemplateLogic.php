@@ -22,6 +22,12 @@ class TemplateLogic{
 		}elseif(keyword_exists($message,['test image carousel template'])){
 			$reply = $this->testImageCarouselTemplate();
 			$type  = 'carousel_image';
+		}elseif(keyword_exists($message,['-help -test_template'])){
+			$reply .= 'test button template'."\n";
+			$reply .= 'test confirm template'."\n";
+			$reply .= 'test carousel template'."\n";
+			$reply .= 'test image carousel template'."\n";
+			$type = 'msg';
 		}
 	}
 
