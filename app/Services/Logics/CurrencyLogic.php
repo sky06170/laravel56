@@ -27,6 +27,8 @@ class CurrencyLogic{
 			
 		}elseif(keyword_exists($message,['圜','幣','圓','元','圜','克朗','銖','里拉','披索','盾']) && strpos($message,'換') !== false && strpos($message,'測試') === false){
 
+			$message = $this->priceInfoAnalytics($message);
+
 			$price = preg_replace('/[^.0-9]/','',$message);
 
 			$strings = explode('換',$message);
@@ -78,7 +80,65 @@ class CurrencyLogic{
 		}
 	}
 
-	public function exchangeRateConversion(&$reply, $price = 0, $string1, $string2)
+	/**
+	 * 分析金額資訊
+	 * @param  string $message
+	 * @return string
+	 */
+	private function priceInfoAnalytics($message)
+	{
+		$unitStr = [
+			'億' => '00000',
+			'萬' => '0000',
+			'千' => '000',
+			'百' => '00'
+		];
+
+		$placeStrList = [
+			'九' => '9',
+			'八' => '8',
+			'七' => '7',
+			'六' => '6',
+			'五' => '5',
+			'四' => '4',
+			'三' => '3',
+			'二' => '2',
+			'一' => '1',
+		];
+
+		$message_strlen = strlen($message);
+
+		$temp = '';
+		for($i=0;$i<$message_strlen;$i++){
+			$blade    = mb_substr($message,$i,1);
+			if($blade !== '十'){
+				$blade = array_get($unitStr, $blade, $blade);
+				$now_blade = array_get($placeStrList, $blade, $blade);
+			}else{
+				$last_blade = mb_substr($message,$i-1,1);
+				$next_blade = mb_substr($message,$i+1,1);
+				if(array_key_exists($last_blade, $placeStrList) && array_key_exists($next_blade, $placeStrList)){
+					$now_blade = '';
+				}elseif(!array_key_exists($last_blade, $placeStrList) && array_key_exists($next_blade, $placeStrList)){
+					$now_blade = '1';
+				}else{
+					$now_blade = '10';
+				}
+			}
+			$temp .= $now_blade;
+		}
+
+		return $temp;
+	}
+
+	/**
+	 * 匯率換算
+	 * @param  string  &$reply
+	 * @param  integer $price
+	 * @param  string  $string1
+	 * @param  string  $string2
+	 */
+	private function exchangeRateConversion(&$reply, $price = 0, $string1, $string2)
 	{
 		$list = $this->currencyService->generateYahooList();
 
