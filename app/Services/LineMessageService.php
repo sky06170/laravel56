@@ -18,8 +18,11 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use App\Repositories\LineConfigRepository;
+use App\Traits\LineLog;
 
 class LineMessageService{
+
+	use LineLog;
 
 	protected $LINE_CHANNEL_ID;
 
@@ -109,13 +112,14 @@ class LineMessageService{
 	 * @param  string $type
 	 * @return bool
 	 */
-	public function reply($replyToken, $reply = '', $type = 'msg')
+	public function reply($webhookData, $reply = '', $type = 'msg')
 	{
 		$messageBuilder = $this->messageBuilder($reply, $type);
 
 		if($messageBuilder !== null){
-			$response = $this->bot->replyMessage($replyToken, $messageBuilder);
+			$response = $this->bot->replyMessage($webhookData['replyToken'], $messageBuilder);
 			if ($response->isSucceeded()) {
+				$this->log(json_encode($reply), 'bot', $webhookData['replyToken'], $webhookData['source_userID'], $webhookData['source_groupID']);
 			    return true;
 			}else{
 				Log::info($response->getHTTPStatus() . ' ' . $response->getRawBody());
@@ -228,16 +232,21 @@ class LineMessageService{
 
 		$data = $jsonObject->events[0];
 
-		return [
+		$response = [
 			'type' => $data->type,
 			'replyToken' => $data->replyToken,
-			'source_userID' => $data->source->userId,
 			'source_type' => $data->source->type,
+			'source_userID' => $data->source->userId,
+			'source_groupID' => ($data->source->type === 'group' ? $data->source->groupId : 0),
 			'timestamp' => $data->timestamp,
 			'message_type' => $data->message->type,
 			'message_id' => $data->message->id,
 			'message_text' => $data->message->text
 		];
+
+		$this->log($response['message_text'], 'user', $response['replyToken'], $response['source_userID'], $response['source_groupID']);
+
+		return $response;
 	}
 
 	private function sendRequest($method, $uri, $formParams, $headers)
