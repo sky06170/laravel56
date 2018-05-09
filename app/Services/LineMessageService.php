@@ -119,7 +119,7 @@ class LineMessageService{
 		if($messageBuilder !== null){
 			$response = $this->bot->replyMessage($webhookData['replyToken'], $messageBuilder);
 			if ($response->isSucceeded()) {
-				$this->log(json_encode($reply), 'bot', $webhookData['replyToken'], $webhookData['source_userID'], $webhookData['source_groupID']);
+				$this->log(json_encode($reply), $type, 'bot', $webhookData['replyToken'], $webhookData['source_userID'], $webhookData['source_groupID']);
 			    return true;
 			}else{
 				Log::info($response->getHTTPStatus() . ' ' . $response->getRawBody());
@@ -141,6 +141,7 @@ class LineMessageService{
 			if($messageBuilder !== null){
 				$response = $this->bot->pushMessage($this->LINE_USER_ID, $messageBuilder);
 				if ($response->isSucceeded()) {
+					$this->log(json_encode($message), $type, 'bot', '', $this->LINE_USER_ID, 0);
 				    return true;
 				}else{
 					Log::info($response->getHTTPStatus() . ' ' . $response->getRawBody());
@@ -244,7 +245,7 @@ class LineMessageService{
 			'message_text' => $data->message->text
 		];
 
-		$this->log($response['message_text'], 'user', $response['replyToken'], $response['source_userID'], $response['source_groupID']);
+		$this->log($response['message_text'], 'user', 'msg', $response['replyToken'], $response['source_userID'], $response['source_groupID']);
 
 		return $response;
 	}

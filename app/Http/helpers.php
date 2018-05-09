@@ -13,4 +13,13 @@ if(!function_exists('keyword_exists')){
 
 }
 
+if(!function_exists('array_get')){
+	function array_get($arr, $key, $default = ''){
+		if(array_key_exists($key, $arr)){
+			return $arr[$key];
+		}
+		return $default;
+	}
+}
+
 ?>
