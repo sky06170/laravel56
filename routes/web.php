@@ -15,6 +15,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::group(['prefix' => '/gtm'], function(){
+
+	Route::get('/', 'GoogleGtmController@index');
+
+});
+
+Route::group(['prefix' => '/embed'], function(){
+
+	Route::get('/youtube', 'YoutubeController@index');
+
+});
+
 Route::group(['prefix' => '/test'], function(){
 
 	Route::get('/sendCarouselBtnTemplate', 'TestController@sendCarouselBtnTemplate');

@@ -19,6 +19,8 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @include('layouts.googleanalytics')
+    @include('layouts.googlegtm_head')
 </head>
 <body>
     <div id="app">
@@ -71,5 +73,6 @@
             @yield('content')
         </main>
     </div>
+    @include('layouts.googlegtm_body');
 </body>
 </html>
