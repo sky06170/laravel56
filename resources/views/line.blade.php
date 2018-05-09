@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>Laravel</title>
 
@@ -64,9 +65,8 @@
             }
         </style>
     </head>
-    <body>
+    <body id="capture">
         <div class="flex-center position-ref full-height">
-
             <div class="content">
                 <div class="title m-b-md">
                     Line Message
@@ -81,13 +81,17 @@
                             <input type="button" value="確認模板" onclick="send('/line/sendConfirmTemplate', 'confirm')">
                             <input type="button" value="Carousel Btn模板" onclick="send('/line/sendCarouselBtnTemplate', 'carousel_button')">
                             <input type="button" value="Carousel Img模板" onclick="send('/line/sendCarouselImgTemplate', 'carousel_image')">
+                            <input type="button" value="下載截圖" onclick="downloadImg();">
                         </div>
                         <div><a href="https://line.me/R/ti/p/%40lsv2876d"><img height="36" border="0" alt="加入好友" src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png"></a></div>
+                        <a id="autoDownload" style="display:none"></a>
                     </form>
                 </div>
             </div>
         </div>
         <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+        <script src="{{ asset('js/html2canvas.js') }}"></script>
+        <script src="{{ asset('js/keymaster.js') }}"></script>
         <script>
             //jQuery 寫法
             function send(uri,act)
@@ -112,6 +116,20 @@
                     }
                 });
             }
+            function downloadImg()
+            {
+                html2canvas(document.querySelector("#capture")).then(canvas => {
+                    $("#autoDownload").attr('href',canvas.toDataURL());
+                    $("#autoDownload").attr('download','share.png');
+                    document.body.appendChild(canvas);
+                    lnk = document.getElementById("autoDownload");
+                    lnk.click();
+                });
+            }
+
+            $(function(){
+                key('ctrl+q', function(){ downloadImg(); });
+            });
         </script>
     </body>
 </html>
