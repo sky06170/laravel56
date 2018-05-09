@@ -245,7 +245,7 @@ class LineMessageService{
 			'message_text' => $data->message->text
 		];
 
-		$this->log($response['message_text'], 'user', 'msg', $response['replyToken'], $response['source_userID'], $response['source_groupID']);
+		$this->log($response['message_text'], 'msg', 'user', $response['replyToken'], $response['source_userID'], $response['source_groupID']);
 
 		return $response;
 	}
