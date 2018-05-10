@@ -91,7 +91,7 @@
         </div>
         <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
         <script src="{{ asset('js/html2canvas.js') }}"></script>
-        <script src="{{ asset('js/keymaster.js') }}"></script>
+        <script src="{{ asset('js/shortcut.js') }}"></script>
         <script>
             //jQuery 寫法
             function send(uri,act)
@@ -124,11 +124,14 @@
                     document.body.appendChild(canvas);
                     lnk = document.getElementById("autoDownload");
                     lnk.click();
+                    $('canvas').remove();
                 });
             }
 
             $(function(){
-                key('ctrl+q', function(){ downloadImg(); });
+                shortcut.add("Ctrl+Q",function() {
+                        downloadImg();
+                });
             });
         </script>
     </body>
