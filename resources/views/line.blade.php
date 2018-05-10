@@ -81,7 +81,6 @@
                             <input type="button" value="確認模板" onclick="send('/line/sendConfirmTemplate', 'confirm')">
                             <input type="button" value="Carousel Btn模板" onclick="send('/line/sendCarouselBtnTemplate', 'carousel_button')">
                             <input type="button" value="Carousel Img模板" onclick="send('/line/sendCarouselImgTemplate', 'carousel_image')">
-                            <input type="button" value="下載截圖" onclick="downloadImg();">
                         </div>
                         <div><a href="https://line.me/R/ti/p/%40lsv2876d"><img height="36" border="0" alt="加入好友" src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png"></a></div>
                         <a id="autoDownload" style="display:none"></a>

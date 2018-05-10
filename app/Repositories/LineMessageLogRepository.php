@@ -13,7 +13,21 @@ class LineMessageLogRepository{
 
 	public function log($dataArray = [])
 	{
-		return $this->db()->insert($dataArray);
+		try{
+
+			DB::beginTransaction();
+
+			$response = $this->db()->insert($dataArray);
+
+			DB::commit();
+
+			return $response;
+
+		}catch(\Exception $e){
+
+			DB::rollback();
+
+		}
 	}
 
 }
