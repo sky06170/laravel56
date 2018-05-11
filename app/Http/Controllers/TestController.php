@@ -3,18 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
-use Symfony\Component\DomCrawler\Crawler;
+use App\Services\JuksyService;
 use App\Services\LineMessageService;
+use Illuminate\Support\Facades\Log;
 
 class TestController extends Controller
 {
 
     protected $lineMessageService;
 
-    public function __construct(LineMessageService $lineMessageService)
+    public function __construct(JuksyService $juksyService, LineMessageService $lineMessageService)
     {
+        $this->juksyService       = $juksyService;
         $this->lineMessageService = $lineMessageService;
+    }
+
+    public function showJuksyBannerList()
+    {
+        $lists = $this->juksyService->getBannerList();
+
+        $columns = [];
+
+        foreach($lists as $list){
+            $item = [
+                'imageUrl' => str_replace('i=1920x640','i=1000x331',$list['imageUrl']),
+                'actionBuilder' => [
+                        'label' => 'View detail',
+                        'uri' => 'https://www.juksy.com'.$list['articleUrl']
+                    ]
+            ];
+            array_push($columns, $item);
+        }
+
+        $response = $this->lineMessageService->push($columns, 'carousel_image');
     }
 
     public function sendCarouselBtnTemplate()
@@ -65,24 +86,34 @@ class TestController extends Controller
     public function sendCarouselImgTemplate()
     {
         $columns = [
-                [
-                    'imageUrl' => 'https://static.juksy.com/files/articles/78005/5adfea9b3364f.gif?m=widen&i=1000',
-                    'actionBuilders' => [
-                                            [
-                                                'label' => 'View detail',
-                                                'uri'  => 'https://www.juksy.com/archives/78005'
-                                            ]
-                                    ],
-                ],
-                [
-                    'imageUrl' => 'https://static.juksy.com/files/articles/78063/5ae695213024b.PNG?m=widen&i=1000',
-                    'actionBuilders' => [
-                                            [
-                                                'label' => 'View detail',
-                                                'uri'  => 'https://www.juksy.com/archives/78063'
-                                            ]
-                                    ],
-                ],
+                        [
+                            'imageUrl' => 'https://static.juksy.com/files/articles/78005/5adfea9b3364f.gif?m=widen&i=1000',
+                            'actionBuilder' => [
+                                                    'label' => 'View detail',
+                                                    'uri'  => 'https://www.juksy.com/archives/78005'
+                                            ],
+                        ],
+                        [
+                            'imageUrl' => 'https://static.juksy.com/files/articles/78063/5ae695213024b.PNG?m=widen&i=1000',
+                            'actionBuilder' => [
+                                                    'label' => 'View detail',
+                                                    'uri'  => 'https://www.juksy.com/archives/78063'
+                                            ],
+                        ],
+                        [
+                            'imageUrl' => 'https://static.juksy.com/files/articles/77987/5adeba7bf1d20.jpg?m=widen&i=1000',
+                            'actionBuilder' => [
+                                                    'label' => 'View detail',
+                                                    'uri'  => 'https://www.juksy.com/archives/77987'
+                                            ],
+                        ],
+                        [
+                            'imageUrl' => 'https://static.juksy.com/files/articles/78002/5ae03d29b3b41.JPG?m=widen&i=1000',
+                            'actionBuilder' => [
+                                                    'label' => 'View detail',
+                                                    'uri'  => 'https://www.juksy.com/archives/78002'
+                                            ],
+                        ],
             ];
 
         $response = $this->lineMessageService->push($columns, 'carousel_image');
