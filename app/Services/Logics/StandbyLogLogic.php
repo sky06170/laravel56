@@ -24,10 +24,13 @@ class StandbyLogLogic{
 			switch($data->log){
 
 				case 'register.user':
-
 					$this->registerUser($reply, $type, $message, $uid, $data);
-
 					break;
+
+				case 'update.user.name':
+					$this->updateUser($reply, $type, $message, $uid, $data);
+					break;
+
 				default:
 					break;
 
@@ -49,6 +52,7 @@ class StandbyLogLogic{
 			];
 
 			$response = $this->userRepo->registerUser($dataArr);
+
 			$this->standbyLogRepo->delete($data->id);
 
 			if($response){
@@ -61,7 +65,38 @@ class StandbyLogLogic{
 
 		}catch(\Exception $e){
 
-			$reply = '註冊失敗!';
+			$reply = 'Error!';
+
+			DB::rollback();
+
+		}
+	}
+
+	private function updateUser(&$reply, &$type, $message, $uid, $data)
+	{
+		try{
+
+			DB::beginTransaction();
+
+			$dataArr = [
+				'name' => $message
+			];
+
+			$response = $this->userRepo->updateUser($uid, $dataArr);
+
+			$this->standbyLogRepo->delete($data->id);
+
+			if($response){
+				$reply = '更新成功!';
+			}else{
+				$reply = '更新失敗!';
+			}
+
+			DB::commit();
+
+		}catch(\Exception $e){
+
+			$reply = 'Error!';
 
 			DB::rollback();
 

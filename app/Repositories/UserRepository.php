@@ -24,6 +24,11 @@ class UserRepository{
 		return $this->user->create($dataArr);
 	}
 
+	public function updateUser($uid, $dataArr = [])
+	{
+		return $this->user->where('uid', $uid)->update($dataArr);
+	}
+
 }
 
 ?>
