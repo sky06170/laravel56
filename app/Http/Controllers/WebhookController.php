@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Log;
 class WebhookController extends Controller
 {
 
-	protected $lineMessageService;
+	protected $messageService,$lineMessageService;
 
-    public function __construct(LineMessageService $lineMessageService)
+    public function __construct(MessageService $messageService, LineMessageService $lineMessageService)
     {
+        $this->messageService = $messageService;
     	$this->lineMessageService = $lineMessageService;
     }
 
@@ -23,7 +24,7 @@ class WebhookController extends Controller
 
     	$webhookData = $this->lineMessageService->getWebhookData($jsonString);
 
-    	$replyData = (new MessageService($webhookData))->getLineReply();
+    	$replyData = $this->messageService->getLineReply($webhookData);
 
     	$this->lineMessageService->reply($webhookData, $replyData['reply'], $replyData['type']);
     }
