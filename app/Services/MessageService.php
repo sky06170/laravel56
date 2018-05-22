@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\Logics\StandbyLogLogic;
 use App\Services\Logics\TemplateLogic;
 use App\Services\Logics\UserLogic;
+use App\Services\Logics\JuksyLogic;
 use App\Services\Logics\CurrencyLogic;
 use App\Services\Logics\NormalLogic;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +25,8 @@ class MessageService{
 		$this->templateLogic = new TemplateLogic();
 
 		$this->userLogic = new UserLogic($userRepo, $standbyLogRepo);
+
+		$this->juksyLogic = new JuksyLogic();
 
 		$this->currencyLogic = new CurrencyLogic();
 
@@ -49,6 +52,10 @@ class MessageService{
 
 		if($reply === ''){
 			$this->userLogic->analyticsMessage($reply, $type, $message, $this->webhookData['source_userID']);
+		}
+
+		if($reply === ''){
+			$this->juksyLogic->analyticsMessage($reply, $type, $message);
 		}
 
 		if($reply === ''){

@@ -29,6 +29,8 @@ Route::group(['prefix' => '/embed'], function(){
 
 Route::group(['prefix' => '/test'], function(){
 
+	Route::get('/showJuksyBannerList', 'TestController@showJuksyBannerList');
+
 	Route::get('/sendCarouselBtnTemplate', 'TestController@sendCarouselBtnTemplate');
 
 	Route::get('/sendCarouselImgTemplate', 'TestController@sendCarouselImgTemplate');
