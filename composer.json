@@ -12,6 +12,7 @@
         "laravel/tinker": "^1.0",
         "linecorp/line-bot-sdk": "^2.3",
         "nesbot/carbon": "^1.25",
+        "pusher/pusher-php-server": "^3.0",
         "symfony/dom-crawler": "^4.0"
     },
     "require-dev": {

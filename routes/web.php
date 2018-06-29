@@ -27,7 +27,16 @@ Route::group(['prefix' => '/embed'], function(){
 
 });
 
-Route::group(['prefix' => '/test'], function(){
+Route::group(['prefix' => '/test'], function () {
+
+	Route::get('/channelEvent', function(){
+		event(new App\Events\PushMessage());
+    	return "Event has been sent!";
+	});
+
+	Route::get('/channelListen', function () {
+		return response()->view('channel');
+	});
 
 	Route::get('/showJuksyBannerList', 'TestController@showJuksyBannerList');
 
