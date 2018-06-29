@@ -25,7 +25,7 @@ class LineConfigRepository{
 
 	public function updateAccessToken($dataArray)
 	{
-		return $this->lineConfig->update($dataArray);
+		return $this->lineConfig->find(1)->update($dataArray);
 	}
 
 }

@@ -62,14 +62,16 @@ class LineMessageService{
 	private function checkAccessTokenInfo()
 	{
 		$config = $this->lineConfigRepo->find();
-		if($config == null){
+		$this->LINE_ACCESS_TOKEN = $config->access_token;
+		
+		if ($config == null) {
 			$dataArray               = $this->getAccessTokenInfo();
 			$response                = $this->lineConfigRepo->createAccessToken($dataArray);
 			$this->LINE_ACCESS_TOKEN = $response->access_token;
-		}else{
+		} else {
 			$today              = Carbon::now('Asia/Taipei')->getTimestamp();
 			$accessTokenExpires = Carbon::createFromFormat('Y-m-d H:i:s', $config->updated_at, 'Asia/Taipei')->addSeconds($config->access_token_expires_in)->getTimestamp();
-			if($today >= $accessTokenExpires){
+			if ($today >= $accessTokenExpires) {
 				$dataArray               = $this->getAccessTokenInfo();
 				$response                = $this->lineConfigRepo->updateAccessToken($dataArray);
 				$this->LINE_ACCESS_TOKEN = $response->access_token;
