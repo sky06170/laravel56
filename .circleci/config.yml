@@ -7,8 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/php:7.2.4-browsers
-      - image: circleci/node:6.11
+      - image: circleci/php:7.2.11
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -38,5 +37,5 @@ jobs:
             if [ "${CIRCLE_BRANCH}" == "develop" ]; then
               composer -v
             elif [ "${CIRCLE_BRANCH}" == "master" ]; then
-              npm -v
+              composer -help
             fi
