@@ -32,3 +32,12 @@ jobs:
           paths:
             - ./vendor
           key: v1-dependencies-{{ checksum "composer.json" }}
+
+      - run:
+          name: Deploy
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              composer -v
+            elif [ "${CIRCLE_BRANCH}" == "master" ]; then
+              npm -v
+            fi
