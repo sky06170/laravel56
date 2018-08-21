@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\JuksyService;
 use App\Services\LineMessageService;
 use Illuminate\Support\Facades\Log;
+use App\Events\PushMessage;
 
 class TestController extends Controller
 {
@@ -16,6 +17,34 @@ class TestController extends Controller
     {
         $this->juksyService       = $juksyService;
         $this->lineMessageService = $lineMessageService;
+    }
+
+    public function channelShow(Request $request, $name = null)
+    {
+        if (is_null($name)) {
+            $name = '匿名者';
+        }
+        return response()->view('channel', ['name' => $name]);
+    }
+
+    public function channelSendMessage(Request $request)
+    {
+        $user = $request->input('user', null);
+        $message = $request->input('message', null);
+
+        try {
+
+            if (!is_null($user) && !is_null($message)) {
+                event(new PushMessage($user, $message));
+                return response()->json(['status' => 1]);
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(['status' => 0]);
+        }
+
+        return response()->json(['status' => -1]);
+
     }
 
     public function showJuksyBannerList()

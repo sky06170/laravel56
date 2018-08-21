@@ -14,20 +14,24 @@ class PushMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    protected $user, $message;
+
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($user, $message = '')
     {
-
+        $this->user = $user;
+        $this->message = $message;
     }
 
     public function broadcastWith()
     {
         return [
-            'message' => 'this is pusher test'
+            'user' => $this->user,
+            'message' => $this->message
         ];
     }
 

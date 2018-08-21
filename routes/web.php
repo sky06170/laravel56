@@ -34,9 +34,9 @@ Route::group(['prefix' => '/test'], function () {
     	return "Event has been sent!";
 	});
 
-	Route::get('/channelListen', function () {
-		return response()->view('channel');
-	});
+	Route::post('/channelSendMessage', 'TestController@channelSendMessage');
+
+	Route::get('/channelListen/{name}', 'TestController@channelShow');
 
 	Route::get('/showJuksyBannerList', 'TestController@showJuksyBannerList');
 
