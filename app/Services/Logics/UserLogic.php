@@ -14,7 +14,7 @@ class UserLogic{
 		$this->standbyLogRepo = $standbyLogRepo;
 	}
 
-	private function setStandbyLog($log)
+	private function setStandbyLog($uid, $log)
 	{
 		$dataArr = [
 				'uid'        => $uid,
@@ -43,7 +43,7 @@ class UserLogic{
 			$reply = '你已註冊過了!';
 		}else{
 			$reply = '請輸入使用者名稱';
-			$this->setStandbyLog('register.user');
+			$this->setStandbyLog($uid, 'register.user');
 		}
 	}
 
@@ -51,7 +51,7 @@ class UserLogic{
 	{
 		if($this->userRepo->findUserByUid($uid) != null){
 			$reply = '請輸入欲更新的使用者名稱';
-			$this->setStandbyLog('update.user.name');
+			$this->setStandbyLog($uid, 'update.user.name');
 		}else{
 			$reply = '查詢不到您的資料!';
 		}
