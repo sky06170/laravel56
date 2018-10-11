@@ -19,7 +19,14 @@ Route::group(['prefix' => '/webhook'], function(){
 
 });
 
-
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+    'prefix' => '/schedule',
+    'namespace' => 'Api'
+], function($route){
+    $route->get('/currency_record', 'ScheduleController@currencyRecord');
 });
+
+
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
