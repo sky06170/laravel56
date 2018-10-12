@@ -2,21 +2,20 @@
 
 namespace App\Services;
 
-use GuzzleHttp\Client;
+use App\Services\Traits\GuzzleHttpRequest;
 use Symfony\Component\DomCrawler\Crawler;
 
-class CurrencyConverterService{
+class CurrencyConverterService
+{
+    use GuzzleHttpRequest;
 
 	public function __construct(){}
 
 	public function generateYahooList()
     {
-        $method = 'get';
-        $uri = 'https://tw.money.yahoo.com/currency-converter';
-        $formParams = [];
-        $response = $this->sendRequest($method,$uri,$formParams);
-        $body = $response->getBody();
-        $contents = $body->getContents();
+        $url = 'https://tw.money.yahoo.com/currency-converter';
+        $response = $this->sendRequest('GET',$url,[]);
+        $contents = $response->getBody()->getContents();
         $list = $this->analyticHtml($contents);
         return $list;
     }
@@ -118,15 +117,6 @@ class CurrencyConverterService{
         }
         return $alias;
     }
-
-    private function sendRequest($method,$uri,$formParams)
-    {
-        $client = new Client();
-        return $client->request($method,$uri,[
-            'form_params' => $formParams
-        ]);
-    }
-
 }
 
 ?>
