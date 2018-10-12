@@ -19,10 +19,11 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuild
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use App\Repositories\LineConfigRepository;
 use App\Traits\LineLog;
+use App\Services\Traits\GuzzleHttpRequest;
 
 class LineMessageService{
 
-	use LineLog;
+	use LineLog,GuzzleHttpRequest;
 
 	protected $LINE_CHANNEL_ID;
 
@@ -250,16 +251,6 @@ class LineMessageService{
 		$this->log($response['message_text'], 'msg', 'user', $response['replyToken'], $response['source_userID'], $response['source_groupID']);
 
 		return $response;
-	}
-
-	private function sendRequest($method, $uri, $formParams, $headers)
-	{
-	    $client = new Client;
-
-	    return $client->request($method,$uri,[
-	        'form_params' => $formParams,
-	        'headers' => $headers
-	    ]);
 	}
 
 	/**
