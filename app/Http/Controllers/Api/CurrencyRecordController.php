@@ -23,7 +23,6 @@ class CurrencyRecordController extends Controller
                 $records = [];
                 for ($i = 1; $i <= $maxDay; $i++) {
                     $datatime = $year.'-'.$month.'-'.$i.' 19:0';
-                    Log::info($datatime);
                     $record = $recordRepo->getHighchartsRecords($currencyCategory, $datatime);
                     if ($record !== null) {
                         array_push($categories, $i);
@@ -32,12 +31,18 @@ class CurrencyRecordController extends Controller
                 }
 
                 $immediateBuys = $this->getImmediateBuy($records);
+                $immediateSells = $this->getImmediateSell($records);
+                $cashBuys = $this->getCashBuy($records);
+                $cashSells = $this->getCashSell($records);
 
                 return response()->json([
                     'status' => true,
                     'categories' => $categories,
                     'records' => $records,
-                    'immediateBuys' => $immediateBuys
+                    'immediateBuys' => $immediateBuys,
+                    'immediateSells' => $immediateSells,
+                    'cashBuys' => $cashBuys,
+                    'cashSells' => $cashSells
                 ]);
             } catch (\Exception $e) {
                 return response()->json(['status' => false, 'msg' => $e->getMessage()]);
@@ -57,26 +62,59 @@ class CurrencyRecordController extends Controller
             array_push($values, $value);
         }
         return [
-            'title' => 'immediate_buy',
+            'title' => '即時買進',
             'values' => $values
         ];
     }
 
     //銀行即時賣出
-    private function getImmediateSell()
+    private function getImmediateSell($records)
     {
-
+        $values = [];
+        foreach ($records as $record) {
+            $value = 0;
+            if ($record->immediate_sell !== null) {
+                $value = (double) $record->immediate_sell;
+            }
+            array_push($values, $value);
+        }
+        return [
+            'title' => '即時賣出',
+            'values' => $values
+        ];
     }
 
     //銀行現金買進
-    private function getCashBuy()
+    private function getCashBuy($records)
     {
-
+        $values = [];
+        foreach ($records as $record) {
+            $value = 0;
+            if ($record->cash_buy !== null) {
+                $value = (double) $record->cash_buy;
+            }
+            array_push($values, $value);
+        }
+        return [
+            'title' => '現金買進',
+            'values' => $values
+        ];
     }
 
     //銀行現金賣出
-    private function getCashSell()
+    private function getCashSell($records)
     {
-
+        $values = [];
+        foreach ($records as $record) {
+            $value = 0;
+            if ($record->cash_sell !== null) {
+                $value = (double) $record->cash_sell;
+            }
+            array_push($values, $value);
+        }
+        return [
+            'title' => '現金賣出',
+            'values' => $values
+        ];
     }
 }
