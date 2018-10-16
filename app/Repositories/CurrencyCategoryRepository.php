@@ -19,4 +19,12 @@ class CurrencyCategoryRepository
         return $this->model->get();
     }
 
+    public function getNames()
+    {
+        return collect($this->model->select('name')->get())
+            ->map(function($item ,$key){
+                return $item->name;
+            })->all();
+    }
+
 }

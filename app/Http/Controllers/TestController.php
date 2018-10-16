@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Services\JuksyService;
 use App\Services\LineMessageService;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class TestController extends Controller
 {
@@ -16,6 +17,25 @@ class TestController extends Controller
     {
         $this->juksyService       = $juksyService;
         $this->lineMessageService = $lineMessageService;
+    }
+
+    public function testHighcharts()
+    {
+        $categoryRepo = repo('CurrencyCategoryRepository');
+        $categories = $categoryRepo->getLists();
+
+        $nowYear = Carbon::now()->year;
+        $startYear = config('currency.highcharts_start_year');
+        $years = [$startYear];
+        if ($nowYear > $startYear) {
+            for ($i = $startYear; $i<$nowYear; $i++) {
+                array_push($years, $i);
+            }
+        }
+
+        $data = compact('categories', 'years', 'maxDay');
+
+        return view('highcharts', $data);
     }
 
     public function showJuksyBannerList()
