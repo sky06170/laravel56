@@ -14,6 +14,17 @@ class CurrencyRecordRepository
         $this->model = $model;
     }
 
+    public function getHighchartsRecords($currencyCategory, $datatime)
+    {
+        $category = CurrencyCategory::where('name', $currencyCategory)->first();
+        if ($category !== null) {
+            return $this->model->where('currency_category_id', $category->id)
+                ->where('created_at', 'like', '%'.$datatime.'%')
+                ->first();
+        }
+        return null;
+    }
+
     public function createCurrencyRecouds($data)
     {
         $data = $this->clearNullData($data);

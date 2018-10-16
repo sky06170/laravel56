@@ -22,8 +22,15 @@ Route::group(['prefix' => '/webhook'], function(){
 Route::group([
     'prefix' => '/schedule',
     'namespace' => 'Api'
-], function($route){
+], function ($route) {
     $route->get('/currency_record', 'ScheduleController@currencyRecord');
+});
+
+Route::group([
+    'prefix' => '/currency',
+    'namespace' => 'Api'
+], function ($route) {
+    $route->post('/highcharts', 'CurrencyRecordController@getHighcharts');
 });
 
 
