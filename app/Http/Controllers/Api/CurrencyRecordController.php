@@ -50,6 +50,15 @@ class CurrencyRecordController extends Controller
         }
     }
 
+    public function getSearchBarInfo()
+    {
+        $categoryRepo = repo('CurrencyCategoryRepository');
+
+        return response()->json([
+            'categories' => $categoryRepo->getNames()
+        ]);
+    }
+
     //銀行即時買進
     private function getImmediateBuy($records)
     {

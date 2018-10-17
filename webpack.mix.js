@@ -11,7 +11,14 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/js')
-   .sass('resources/assets/sass/app.scss', 'public/css');
+mix.autoload({
+	jquery: ['$', 'window.jQuery', 'jQuery', 'jquery'],
+	vue: ['Vue', 'window.Vue'],
+	axios: ['axios', 'window.axios']
+});
+
+mix.js('resources/assets/js/app.js', 'public/js');
+
+mix.sass('resources/assets/sass/app.scss', 'public/css');
 
 mix.copy('node_modules/html2canvas/dist/html2canvas.js','public/js/html2canvas.js');
