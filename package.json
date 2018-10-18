@@ -22,6 +22,7 @@
     "dependencies": {
         "ajv": "^6.5.0",
         "get": "^1.4.0",
+        "highcharts": "^6.2.0",
         "html2canvas": "^1.0.0-alpha.12",
         "i": "^0.3.6",
         "npm": "^6.0.0",

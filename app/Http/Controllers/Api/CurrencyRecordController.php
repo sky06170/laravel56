@@ -54,8 +54,24 @@ class CurrencyRecordController extends Controller
     {
         $categoryRepo = repo('CurrencyCategoryRepository');
 
+        $nowYear = Carbon::now()->year;
+        $startYear = config('currency.highcharts_start_year');
+        $years = [$startYear];
+        if ($nowYear > $startYear) {
+            for ($i = $startYear; $i<$nowYear; $i++) {
+                array_push($years, $i);
+            }
+        }
+
+        $months = [];
+        for ($i=1; $i<=12; $i++) {
+            array_push($months, $i);
+        }
+
         return response()->json([
-            'categories' => $categoryRepo->getNames()
+            'categories' => $categoryRepo->getNames(),
+            'years' => $years,
+            'months' => $months
         ]);
     }
 
