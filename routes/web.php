@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('/highcharts', 'HighchartController@index');
+
 Route::get('/', function () {
     return view('welcome');
 });
