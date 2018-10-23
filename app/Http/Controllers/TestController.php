@@ -19,25 +19,6 @@ class TestController extends Controller
         $this->lineMessageService = $lineMessageService;
     }
 
-    public function testHighcharts()
-    {
-        $categoryRepo = repo('CurrencyCategoryRepository');
-        $categories = $categoryRepo->getLists();
-
-        $nowYear = Carbon::now()->year;
-        $startYear = config('currency.highcharts_start_year');
-        $years = [$startYear];
-        if ($nowYear > $startYear) {
-            for ($i = $startYear; $i<$nowYear; $i++) {
-                array_push($years, $i);
-            }
-        }
-
-        $data = compact('categories', 'years', 'maxDay');
-
-        return view('highcharts', $data);
-    }
-
     public function showJuksyBannerList()
     {
         $lists = $this->juksyService->getBannerList();
