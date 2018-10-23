@@ -31,8 +31,6 @@ Route::group(['prefix' => '/embed'], function(){
 
 Route::group(['prefix' => '/test'], function(){
 
-	Route::get('/highcharts', 'TestController@testHighcharts');
-
 	Route::get('/showJuksyBannerList', 'TestController@showJuksyBannerList');
 
 	Route::get('/sendCarouselBtnTemplate', 'TestController@sendCarouselBtnTemplate');
