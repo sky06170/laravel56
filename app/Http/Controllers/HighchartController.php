@@ -13,7 +13,7 @@ class HighchartController extends Controller
      */
     public function index()
     {
-        return view('highcharts_vue');
+        return view('highcharts');
     }
 
     /**

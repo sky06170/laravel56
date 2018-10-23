@@ -34,12 +34,10 @@
 
 <script>
     import Highcharts from 'highcharts';
+    import { mapGetters, mapActions } from 'vuex';
     export default {
         data() {
             return {
-                categories: [],
-                years: [],
-                months: [],
                 category: '',
                 year: '',
                 month: '',
@@ -48,22 +46,28 @@
         mounted() {
             this.initPage();
         },
+        computed: {
+            ...mapGetters('highcharts', [
+                'categories',
+                'years',
+                'months'
+            ]),
+        },
+        watch: {
+            categories: function() {
+                this.category = this.categories[0];
+            },
+            years: function() {
+                this.year = this.years[0];
+            },
+            months: function() {
+                this.month = this.months[0];
+            },
+        },
         methods: {
-            async initPage () {
-                let response = await this.getSearchBarInfo();
-                this.makeSearchBar(response.data);
-            },
-            getSearchBarInfo() {
-                return axios.post(`/api/currency/searchBarInfo`);
-            },
-            makeSearchBar(data) {
-                this.categories = data.categories;
-                this.years = data.years;
-                this.months = data.months;
-                this.category = data.categories[0];
-                this.year = data.years[0];
-                this.month = data.months[0];
-            },
+            ...mapActions('highcharts', [
+                'initPage'
+            ]),
             async search() {
                 let response = await axios.post(`/api/currency/highcharts`, {
                     'category': this.category,
