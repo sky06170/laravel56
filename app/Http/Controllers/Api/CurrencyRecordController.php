@@ -14,19 +14,36 @@ class CurrencyRecordController extends Controller
         if ($request->ajax()) {
             try {
                 $recordRepo = repo('CurrencyRecordRepository');
+
                 $currencyCategory = $request->input('category');
                 $year = $request->input('year');
                 $month = $request->input('month');
 
-                $maxDay = Carbon::now()->endOfMonth()->day;
-                $categories = [];
-                $records = [];
-                for ($i = 1; $i <= $maxDay; $i++) {
-                    $datatime = $year.'-'.$month.'-'.$i.' 19:0';
-                    $record = $recordRepo->getHighchartsRecords($currencyCategory, $datatime);
-                    if ($record !== null) {
-                        array_push($categories, $i);
-                        array_push($records, $record);
+                if ($request->input('view_mode') == '日') {
+                    $maxDay = Carbon::now()->endOfMonth()->day;
+                    $highcharts_categories = [];
+                    $records = [];
+                    for ($i = 1; $i <= $maxDay; $i++) {
+                        $datatime = $year.'-'.$month.'-'.$i.' 00:0';
+                        $record = $recordRepo->getHighchartsRecords($currencyCategory, $datatime);
+                        if ($record !== null) {
+                            array_push($highcharts_categories, $i);
+                            array_push($records, $record);
+                        }
+                    }
+                } else {
+                    $day = $request->input('day');
+                    $maxHour = 23;
+                    $highcharts_categories = [];
+                    $records = [];
+                    for ($i = 0; $i <= $maxHour; $i++) {
+                        $hour = ($i < 10) ? '0'.$i : $i;
+                        $datatime = $year.'-'.$month.'-'.$day.' '.$hour;
+                        $record = $recordRepo->getHighchartsRecords($currencyCategory, $datatime);
+                        if ($record !== null) {
+                            array_push($highcharts_categories, $i);
+                            array_push($records, $record);
+                        }
                     }
                 }
 
@@ -37,7 +54,7 @@ class CurrencyRecordController extends Controller
 
                 return response()->json([
                     'status' => true,
-                    'categories' => $categories,
+                    'categories' => $highcharts_categories,
                     'records' => $records,
                     'immediateBuys' => $immediateBuys,
                     'immediateSells' => $immediateSells,
