@@ -50075,7 +50075,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                         switch (_context.prev = _context.next) {
                             case 0:
                                 _context.next = 2;
-                                return axios.post('/api/currency/highcharts', {
+                                return axios.post('/api/currency/highchartsInfo', {
                                     'category': this.category,
                                     'year': this.year,
                                     'month': this.month,
@@ -50085,11 +50085,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
                             case 2:
                                 response = _context.sent;
-                                data = response.data;
 
-                                this.makeHighcharts(this.category, data.categories, data.immediateBuys, data.immediateSells, data.cashBuys, data.cashSells);
+                                if (response.data.status) {
+                                    data = response.data.result;
 
-                            case 5:
+                                    this.makeHighcharts(this.category, data.highcharts_categories, data.immediateBuys, data.immediateSells, data.cashBuys, data.cashSells);
+                                } else {
+                                    this.closeHighcharts();
+                                }
+
+                            case 4:
                             case 'end':
                                 return _context.stop();
                         }

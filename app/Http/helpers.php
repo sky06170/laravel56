@@ -32,4 +32,14 @@ if (!function_exists('repo')) {
 	}
 }
 
+if (!function_exists('service')) {
+	function service ($make = null, $parameters = []) {
+		$instance = \Illuminate\Container\Container::getInstance();
+		if ($make === null) {
+			return $instance;
+		}
+		return $instance->make('App\\Services\\'.$make, $parameters);
+	}
+}
+
 ?>

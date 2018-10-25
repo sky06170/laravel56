@@ -87,18 +87,21 @@
                 'initPage'
             ]),
             async search () {
-                let response = await axios.post(`/api/currency/highcharts`, {
+                let response = await axios.post(`/api/currency/highchartsInfo`, {
                     'category': this.category,
                     'year': this.year,
                     'month': this.month,
                     'day': this.day,
                     'view_mode': this.view_mode
                 });
-
-                let data = response.data;
-                this.makeHighcharts(
-                    this.category, data.categories, data.immediateBuys, data.immediateSells, data.cashBuys, data.cashSells
-                );
+                if (response.data.status) {
+                    let data = response.data.result;
+                    this.makeHighcharts(
+                        this.category, data.highcharts_categories, data.immediateBuys, data.immediateSells, data.cashBuys, data.cashSells
+                    );
+                } else {
+                    this.closeHighcharts();
+                }
             },
             makeHighcharts (category, categories, immediateBuys, immediateSells, cashBuys, cashSells) {
                 Highcharts.chart('container', {
