@@ -31,7 +31,7 @@ Route::group([
     'namespace' => 'Api'
 ], function ($route) {
     $route->post('/searchBarInfo', 'CurrencyRecordController@getSearchBarInfo');
-    $route->post('/highcharts', 'CurrencyRecordController@getHighcharts');
+    $route->post('/highchartsInfo', 'CurrencyRecordController@getHighchartsInfo');
 });
 
 

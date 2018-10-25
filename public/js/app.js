@@ -50021,15 +50021,33 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
+            view_modes: ['日', '時'],
+            view_mode: '日',
+            days: [],
             category: '',
             year: '',
-            month: ''
+            month: '',
+            day: ''
         };
     },
     mounted: function mounted() {
@@ -50057,19 +50075,26 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                         switch (_context.prev = _context.next) {
                             case 0:
                                 _context.next = 2;
-                                return axios.post('/api/currency/highcharts', {
+                                return axios.post('/api/currency/highchartsInfo', {
                                     'category': this.category,
                                     'year': this.year,
-                                    'month': this.month
+                                    'month': this.month,
+                                    'day': this.day,
+                                    'view_mode': this.view_mode
                                 });
 
                             case 2:
                                 response = _context.sent;
-                                data = response.data;
 
-                                this.makeHighcharts(this.category, data.categories, data.immediateBuys, data.immediateSells, data.cashBuys, data.cashSells);
+                                if (response.data.status) {
+                                    data = response.data.result;
 
-                            case 5:
+                                    this.makeHighcharts(this.category, data.highcharts_categories, data.immediateBuys, data.immediateSells, data.cashBuys, data.cashSells);
+                                } else {
+                                    this.closeHighcharts();
+                                }
+
+                            case 4:
                             case 'end':
                                 return _context.stop();
                         }
@@ -50145,6 +50170,18 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                     useHTML: false
                 }
             });
+        },
+        getCurrentDays: function getCurrentDays() {
+            this.day = 1;
+            var limitInMonth = [0, 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (this.year % 4 !== 0) {
+                limitInMonth[2] = 28;
+            }
+
+            this.days = [];
+            for (var i = 1; i <= limitInMonth[this.month]; i++) {
+                this.days.push(i);
+            }
         }
     })
 });
@@ -50163,7 +50200,50 @@ var render = function() {
       _c("div", { staticClass: "col-md-12" }, [
         _c("div", { staticClass: "card card-default" }, [
           _c("div", { staticClass: "card-body" }, [
-            _vm._v("\n                    幣別:\n                    "),
+            _vm._v("\n                    檢視單位：\n                    "),
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.view_mode,
+                    expression: "view_mode"
+                  }
+                ],
+                on: {
+                  change: [
+                    function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.view_mode = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    },
+                    function($event) {
+                      _vm.getCurrentDays()
+                    }
+                  ]
+                }
+              },
+              _vm._l(_vm.view_modes, function(item) {
+                return _c("option", { domProps: { value: item } }, [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(item) +
+                      "\n                        "
+                  )
+                ])
+              })
+            ),
+            _vm._v("\n                    幣別：\n                    "),
             _c(
               "select",
               {
@@ -50216,19 +50296,24 @@ var render = function() {
                 ],
                 attrs: { name: "year" },
                 on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.year = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
-                  }
+                  change: [
+                    function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.year = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    },
+                    function($event) {
+                      _vm.getCurrentDays()
+                    }
+                  ]
                 }
               },
               _vm._l(_vm.years, function(year) {
@@ -50255,19 +50340,24 @@ var render = function() {
                 ],
                 attrs: { name: "month" },
                 on: {
-                  change: function($event) {
-                    var $$selectedVal = Array.prototype.filter
-                      .call($event.target.options, function(o) {
-                        return o.selected
-                      })
-                      .map(function(o) {
-                        var val = "_value" in o ? o._value : o.value
-                        return val
-                      })
-                    _vm.month = $event.target.multiple
-                      ? $$selectedVal
-                      : $$selectedVal[0]
-                  }
+                  change: [
+                    function($event) {
+                      var $$selectedVal = Array.prototype.filter
+                        .call($event.target.options, function(o) {
+                          return o.selected
+                        })
+                        .map(function(o) {
+                          var val = "_value" in o ? o._value : o.value
+                          return val
+                        })
+                      _vm.month = $event.target.multiple
+                        ? $$selectedVal
+                        : $$selectedVal[0]
+                    },
+                    function($event) {
+                      _vm.getCurrentDays()
+                    }
+                  ]
                 }
               },
               _vm._l(_vm.months, function(month) {
@@ -50280,6 +50370,52 @@ var render = function() {
                 ])
               })
             ),
+            _vm._v(" "),
+            _vm.view_mode === "時"
+              ? _c("span", [
+                  _vm._v(
+                    "\n                        日期：\n                        "
+                  ),
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.day,
+                          expression: "day"
+                        }
+                      ],
+                      attrs: { name: "day" },
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.day = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        }
+                      }
+                    },
+                    _vm._l(_vm.days, function(item) {
+                      return _c("option", { domProps: { value: item } }, [
+                        _vm._v(
+                          "\n                                " +
+                            _vm._s(item) +
+                            "\n                            "
+                        )
+                      ])
+                    })
+                  )
+                ])
+              : _vm._e(),
             _vm._v(" "),
             _c(
               "button",
