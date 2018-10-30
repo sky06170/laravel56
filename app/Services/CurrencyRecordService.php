@@ -28,6 +28,13 @@ class CurrencyRecordService
         return $months;
     }
 
+    public function getProfit($datas)
+    {
+        $investmentPrice = $datas['simulationInvestment'];
+        $resultPrice = ($investmentPrice / $datas['simulationBuy']) * $datas['simulationSell'];
+        return floor($resultPrice - $investmentPrice);
+    }
+
     public function getHighchartsInfo($datas)
     {
         $recordRepo = repo('CurrencyRecordRepository');
@@ -59,12 +66,16 @@ class CurrencyRecordService
             }
         }
 
+        $datas = [
+            $this->getImmediateBuy($records),
+            $this->getImmediateSell($records),
+            $this->getCashBuy($records),
+            $this->getCashSell($records)
+        ];
+
         return [
             'highcharts_categories' => $highcharts_categories,
-            'immediateSells' => $this->getImmediateBuy($records),
-            'immediateBuys' => $this->getImmediateSell($records),
-            'cashBuys' => $this->getCashBuy($records),
-            'cashSells' => $this->getCashSell($records),
+            'datas' => $datas,
         ];
     }
 
@@ -79,10 +90,7 @@ class CurrencyRecordService
             }
             array_push($values, $value);
         }
-        return [
-            'title' => '即時買進',
-            'values' => $values
-        ];
+        return $this->getReturnDatas('即時買進', $values);
     }
 
     //銀行即時賣出
@@ -96,10 +104,7 @@ class CurrencyRecordService
             }
             array_push($values, $value);
         }
-        return [
-            'title' => '即時賣出',
-            'values' => $values
-        ];
+        return $this->getReturnDatas('即時賣出', $values);
     }
 
     //銀行現金買進
@@ -113,10 +118,7 @@ class CurrencyRecordService
             }
             array_push($values, $value);
         }
-        return [
-            'title' => '現金買進',
-            'values' => $values
-        ];
+        return $this->getReturnDatas('現金買進', $values);
     }
 
     //銀行現金賣出
@@ -130,9 +132,16 @@ class CurrencyRecordService
             }
             array_push($values, $value);
         }
+        return $this->getReturnDatas('現金賣出', $values);
+    }
+
+    private function getReturnDatas($title, $values)
+    {
         return [
-            'title' => '現金賣出',
-            'values' => $values
+            'title' => $title,
+            'values' => $values,
+            'maxValue' => collect($values)->max(),
+            'minValue' => collect($values)->min()
         ];
     }
 }
