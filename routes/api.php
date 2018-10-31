@@ -32,6 +32,7 @@ Route::group([
 ], function ($route) {
     $route->post('/searchBarInfo', 'CurrencyRecordController@getSearchBarInfo');
     $route->post('/highchartsInfo', 'CurrencyRecordController@getHighchartsInfo');
+    $route->post('/caculate', 'CurrencyRecordController@getCaculateResult');
 });
 
 

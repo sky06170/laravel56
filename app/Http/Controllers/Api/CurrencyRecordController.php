@@ -55,4 +55,23 @@ class CurrencyRecordController extends Controller
             ]);
         }
     }
+
+    public function getCaculateResult(Request $request)
+    {
+        try {
+            if ($request->ajax()) {
+                $datas = $request->all();
+                $service = service('CurrencyRecordService');
+                return response()->json([
+                    'status' => true,
+                    'profit' => $service->getProfit($datas)
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'msg' => $e->getMessage()
+            ]);
+        }
+    }
 }
