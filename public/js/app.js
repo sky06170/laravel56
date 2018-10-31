@@ -51466,6 +51466,12 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -51480,10 +51486,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
             year: '',
             month: '',
             day: '',
+            searchResult: null,
             caculateForm: [],
-            simulationBuy: 0,
-            simulationSell: 0,
-            simulationInvestment: 0,
+            simulationBuy: '',
+            simulationSell: '',
+            simulationInvestment: '',
             simulationProfit: 0
         };
     },
@@ -51516,7 +51523,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
         },
         search: function () {
             var _ref = _asyncToGenerator( /*#__PURE__*/__WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.mark(function _callee() {
-                var response, result, highcharts_series;
+                var response, highcharts_series;
                 return __WEBPACK_IMPORTED_MODULE_0_babel_runtime_regenerator___default.a.wrap(function _callee$(_context) {
                     while (1) {
                         switch (_context.prev = _context.next) {
@@ -51534,10 +51541,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
                                 response = _context.sent;
 
                                 if (response.data.status) {
-                                    result = response.data.result;
-                                    highcharts_series = this.makeHighchartsSeries(result.datas);
+                                    this.searchResult = response.data.result;
+                                    highcharts_series = this.makeHighchartsSeries(this.searchResult.datas);
 
-                                    this.makeHighcharts(this.category, result.highcharts_categories, highcharts_series);
+                                    this.makeHighcharts(this.category, this.searchResult.highcharts_categories, highcharts_series);
                                 } else {
                                     this.closeHighcharts();
                                 }
@@ -51556,6 +51563,32 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
             return search;
         }(),
+        setSimulationBuy: function setSimulationBuy(value) {
+            switch (value) {
+                case 'ImmediateMin':
+                    this.simulationBuy = this.searchResult.datas[1].minValue;
+                    break;
+                case 'CashMin':
+                    this.simulationBuy = this.searchResult.datas[3].minValue;
+                    break;
+                default:
+                    this.simulationBuy = '';
+                    break;
+            }
+        },
+        setSimulationSell: function setSimulationSell(value) {
+            switch (value) {
+                case 'ImmediateMax':
+                    this.simulationSell = this.searchResult.datas[0].maxValue;
+                    break;
+                case 'CashMax':
+                    this.simulationSell = this.searchResult.datas[2].maxValue;
+                    break;
+                default:
+                    this.simulationSell = '';
+                    break;
+            }
+        },
         caculate: function caculate() {
             var _this = this;
 
@@ -53134,9 +53167,35 @@ var render = function() {
             _vm._v(" "),
             _vm.highchartsStatus
               ? _c("form", [
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { attrs: { for: "simulationBuy" } }, [
-                      _vm._v("買進匯率")
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _c("div", { staticClass: "input-group-prepend" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-outline-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              _vm.setSimulationBuy("ImmediateMin")
+                            }
+                          }
+                        },
+                        [_vm._v("即時最小值")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-outline-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              _vm.setSimulationBuy("CashMin")
+                            }
+                          }
+                        },
+                        [_vm._v("現金最小值")]
+                      )
                     ]),
                     _vm._v(" "),
                     _c("input", {
@@ -53149,7 +53208,10 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control",
-                      attrs: { id: "simulationBuy" },
+                      attrs: {
+                        id: "simulationBuy",
+                        placeholder: "買進匯率..."
+                      },
                       domProps: { value: _vm.simulationBuy },
                       on: {
                         input: function($event) {
@@ -53162,9 +53224,35 @@ var render = function() {
                     })
                   ]),
                   _vm._v(" "),
-                  _c("div", { staticClass: "form-group" }, [
-                    _c("label", { attrs: { for: "simulationSell" } }, [
-                      _vm._v("賣出匯率")
+                  _c("div", { staticClass: "input-group mb-3" }, [
+                    _c("div", { staticClass: "input-group-prepend" }, [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-outline-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              _vm.setSimulationSell("ImmediateMax")
+                            }
+                          }
+                        },
+                        [_vm._v("即時最大值")]
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-outline-secondary",
+                          attrs: { type: "button" },
+                          on: {
+                            click: function($event) {
+                              _vm.setSimulationSell("CashMax")
+                            }
+                          }
+                        },
+                        [_vm._v("現金最大值")]
+                      )
                     ]),
                     _vm._v(" "),
                     _c("input", {
@@ -53177,7 +53265,10 @@ var render = function() {
                         }
                       ],
                       staticClass: "form-control",
-                      attrs: { id: "simulationSell" },
+                      attrs: {
+                        id: "simulationSell",
+                        placeholder: "賣出匯率..."
+                      },
                       domProps: { value: _vm.simulationSell },
                       on: {
                         input: function($event) {
