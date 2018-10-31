@@ -50,13 +50,19 @@
                         </form>
                         <div id="container"></div>
                         <form v-if="highchartsStatus">
-                            <div class="form-group">
-                                <label for="simulationBuy">買進匯率</label>
-                                <input class="form-control" id="simulationBuy" v-model="simulationBuy">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary" type="button" @click="setSimulationBuy('ImmediateMin')">即時最小值</button>
+                                    <button class="btn btn-outline-secondary" type="button" @click="setSimulationBuy('CashMin')">現金最小值</button>
+                                </div>
+                                <input class="form-control" id="simulationBuy" v-model="simulationBuy" placeholder="買進匯率...">
                             </div>
-                            <div class="form-group">
-                                <label for="simulationSell">賣出匯率</label>
-                                <input class="form-control" id="simulationSell" v-model="simulationSell">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary" type="button" @click="setSimulationSell('ImmediateMax')">即時最大值</button>
+                                    <button class="btn btn-outline-secondary" type="button" @click="setSimulationSell('CashMax')">現金最大值</button>
+                                </div>
+                                <input class="form-control" id="simulationSell" v-model="simulationSell" placeholder="賣出匯率...">
                             </div>
                             <div class="form-group">
                                 <label for="simulationInvestment">投資金額</label>
@@ -89,10 +95,11 @@
                 year: '',
                 month: '',
                 day: '',
+                searchResult: null,
                 caculateForm: [],
-                simulationBuy: 0,
-                simulationSell:0,
-                simulationInvestment: 0,
+                simulationBuy: '',
+                simulationSell:'',
+                simulationInvestment: '',
                 simulationProfit: 0,
             };
         },
@@ -140,13 +147,39 @@
                     'view_mode': this.view_mode
                 });
                 if (response.data.status) {
-                    let result = response.data.result;
-                    let highcharts_series = this.makeHighchartsSeries(result.datas);
+                    this.searchResult = response.data.result;
+                    let highcharts_series = this.makeHighchartsSeries(this.searchResult.datas);
                     this.makeHighcharts(
-                        this.category, result.highcharts_categories, highcharts_series
+                        this.category, this.searchResult.highcharts_categories, highcharts_series
                     );
                 } else {
                     this.closeHighcharts();
+                }
+            },
+            setSimulationBuy (value) {
+                switch (value) {
+                    case 'ImmediateMin':
+                        this.simulationBuy = this.searchResult.datas[1].minValue;
+                        break;
+                    case 'CashMin':
+                        this.simulationBuy = this.searchResult.datas[3].minValue;
+                        break;
+                    default:
+                        this.simulationBuy = '';
+                        break;
+                }
+            },
+            setSimulationSell (value) {
+                switch (value) {
+                    case 'ImmediateMax':
+                        this.simulationSell = this.searchResult.datas[0].maxValue;
+                        break;
+                    case 'CashMax':
+                        this.simulationSell = this.searchResult.datas[2].maxValue;
+                        break;
+                    default:
+                        this.simulationSell = '';
+                        break;
                 }
             },
             caculate () {
