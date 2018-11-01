@@ -3,9 +3,15 @@
 namespace App\Services;
 
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class CurrencyRecordService
 {
+    /**
+     * 建立搜尋列的年份清單
+     *
+     * @return array
+     */
     public function makeSearchBarYears()
     {
         $nowYear = Carbon::now()->year;
@@ -19,6 +25,11 @@ class CurrencyRecordService
         return $years;
     }
 
+    /**
+     * 建立搜尋列的月份清單
+     *
+     * @return array
+     */
     public function makeSearchBarMonths()
     {
         $months = [];
@@ -28,6 +39,12 @@ class CurrencyRecordService
         return $months;
     }
 
+    /**
+     * 取得匯率差的利潤
+     *
+     * @param array $datas
+     * @return int
+     */
     public function getProfit($datas)
     {
         $investmentPrice = $datas['simulationInvestment'];
@@ -35,6 +52,12 @@ class CurrencyRecordService
         return floor($resultPrice - $investmentPrice);
     }
 
+    /**
+     * 取得Highcharts匯率分析圖資訊
+     *
+     * @param [type] $datas
+     * @return void
+     */
     public function getHighchartsInfo($datas)
     {
         $recordRepo = repo('CurrencyRecordRepository');
@@ -66,75 +89,46 @@ class CurrencyRecordService
             }
         }
 
-        $datas = [
-            $this->getImmediateBuy($records),
-            $this->getImmediateSell($records),
-            $this->getCashBuy($records),
-            $this->getCashSell($records)
-        ];
-
         return [
             'highcharts_categories' => $highcharts_categories,
-            'datas' => $datas,
+            'datas' => $this->getRecords($records),
         ];
     }
 
-    //銀行即時買進
-    private function getImmediateBuy($records)
+    /**
+     * 取得所有匯率紀錄
+     *
+     * @param object $records
+     * @return array
+     */
+    private function getRecords($records)
     {
-        $values = [];
-        foreach ($records as $record) {
-            $value = 0;
-            if ($record->immediate_buy !== null) {
-                $value = (double) $record->immediate_buy;
-            }
-            array_push($values, $value);
+        $immediateBuys = [];
+        $immediateSells = [];
+        $cashBuys = [];
+        $cashSells = [];
+        foreach ($records as $record) { 
+            array_push($immediateBuys, $record->immediate_buy !== null ? (double) $record->immediate_buy : 0);
+            array_push($immediateSells, $record->immediate_sell !== null ? (double) $record->immediate_sell : 0);
+            array_push($cashBuys, $record->cash_buy !== null ? (double) $record->cash_buy : 0);
+            array_push($cashSells, $record->cash_sell !== null ? (double) $record->cash_sell : 0);
         }
-        return $this->getReturnDatas('即時買進', $values);
+
+        return [
+            $this->getReturnDatas('即時買進', $immediateBuys),
+            $this->getReturnDatas('即時賣出', $immediateSells),
+            $this->getReturnDatas('現金買進', $cashBuys),
+            $this->getReturnDatas('現金賣出', $cashSells),
+        ];
     }
 
-    //銀行即時賣出
-    private function getImmediateSell($records)
-    {
-        $values = [];
-        foreach ($records as $record) {
-            $value = 0;
-            if ($record->immediate_sell !== null) {
-                $value = (double) $record->immediate_sell;
-            }
-            array_push($values, $value);
-        }
-        return $this->getReturnDatas('即時賣出', $values);
-    }
-
-    //銀行現金買進
-    private function getCashBuy($records)
-    {
-        $values = [];
-        foreach ($records as $record) {
-            $value = 0;
-            if ($record->cash_buy !== null) {
-                $value = (double) $record->cash_buy;
-            }
-            array_push($values, $value);
-        }
-        return $this->getReturnDatas('現金買進', $values);
-    }
-
-    //銀行現金賣出
-    private function getCashSell($records)
-    {
-        $values = [];
-        foreach ($records as $record) {
-            $value = 0;
-            if ($record->cash_sell !== null) {
-                $value = (double) $record->cash_sell;
-            }
-            array_push($values, $value);
-        }
-        return $this->getReturnDatas('現金賣出', $values);
-    }
-
+    /**
+     * 取得回傳的資料
+     *
+     * @param string $title
+     * @param array $values
+     * @return array
+     */
     private function getReturnDatas($title, $values)
     {
         return [

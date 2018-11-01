@@ -148,6 +148,7 @@
                 });
                 if (response.data.status) {
                     this.searchResult = response.data.result;
+                    console.log(this.searchResult.datas);
                     let highcharts_series = this.makeHighchartsSeries(this.searchResult.datas);
                     this.makeHighcharts(
                         this.category, this.searchResult.highcharts_categories, highcharts_series
