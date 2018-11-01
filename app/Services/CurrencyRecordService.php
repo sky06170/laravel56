@@ -40,7 +40,7 @@ class CurrencyRecordService
         $recordRepo = repo('CurrencyRecordRepository');
 
         if ($datas['view_mode'] == '日') {
-            $maxDay = Carbon::now()->endOfMonth()->day;
+            $maxDay = Carbon::createFromFormat('Y-m-d', $datas['year'].'-'.$datas['month'].'-01', 'Asia/Taipei')->endOfMonth()->day;
             $highcharts_categories = [];
             $records = [];
             for ($i = 1; $i <= $maxDay; $i++) {
