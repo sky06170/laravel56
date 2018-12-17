@@ -67,7 +67,8 @@ class CurrencyRecordService
             $highcharts_categories = [];
             $records = [];
             for ($i = 1; $i <= $maxDay; $i++) {
-                $datatime = $datas['year'].'-'.$datas['month'].'-'.$i.' 00:0';
+                $day = ($i < 10) ? '0'.$i : $i;
+                $datatime = $datas['year'].'-'.$datas['month'].'-'.$day.' 00:0';
                 $record = $recordRepo->getHighchartsRecords($datas['category'], $datatime);
                 if ($record !== null) {
                     array_push($highcharts_categories, $i);
@@ -79,8 +80,9 @@ class CurrencyRecordService
             $highcharts_categories = [];
             $records = [];
             for ($i = 0; $i <= $maxHour; $i++) {
+                $day = ($datas['day'] < 10) ? '0'.$datas['day'] : $datas['day'];
                 $hour = ($i < 10) ? '0'.$i : $i;
-                $datatime = $datas['year'].'-'.$datas['month'].'-'.$datas['day'].' '.$hour;
+                $datatime = $datas['year'].'-'.$datas['month'].'-'.$day.' '.$hour;
                 $record = $recordRepo->getHighchartsRecords($datas['category'], $datatime);
                 if ($record !== null) {
                     array_push($highcharts_categories, $i);

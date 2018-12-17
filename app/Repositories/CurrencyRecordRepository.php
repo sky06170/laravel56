@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\CurrencyRecord;
 use App\Models\CurrencyCategory;
+use Illuminate\Support\Facades\Log;
 
 class CurrencyRecordRepository
 {
