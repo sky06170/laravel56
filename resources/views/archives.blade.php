@@ -88,7 +88,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Laravel
+                    Archives {{ $id }}
                 </div>
 
                 <div class="links">
